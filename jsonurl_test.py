@@ -39,3 +39,47 @@ def test_loads_list():
 def test_empty_input():
     with pytest.raises(jsonurl.ParseError):
         jsonurl.loads("")
+
+
+ERROR_STRINGS = [
+    "(",
+    ")",
+    "{",
+    "}",
+    ",",
+    ":",
+    "(1",
+    "(1,",
+    "(a:",
+    "(a:b",
+    "1,",
+    "()a",
+    "(1)a",
+    "(|",
+    "((1)",
+    "(1(",
+    "((1,2,)",
+    "(1,1",
+    "(1,a,()",
+    "(((1,1(",
+    "(((1))",
+    "((a:b)",
+    "(a:b,'')",
+    "((a:b(",
+    "(a:b,c)",
+    "(a:b,c:)",
+    "(a:b,c:,)",
+    "(a&b)",
+    "(a=b)",
+    "'a=b'",
+    "'a&b'",
+    "(a:)",
+    "(:a)",
+    "(a,,c)",
+]
+
+
+@pytest.mark.parametrize("arg", ERROR_STRINGS)
+def test_errors_strings(arg: str):
+    with pytest.raises(jsonurl.ParseError):
+        jsonurl.loads(arg)
