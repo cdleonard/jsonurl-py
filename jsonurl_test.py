@@ -45,6 +45,10 @@ def test_empty_composite():
     assert {} == jsonurl.loads("()")
 
 
+def test_one_item_list():
+    assert [1] == jsonurl.loads("(1)")
+
+
 ERROR_STRINGS = [
     "(",
     ")",
