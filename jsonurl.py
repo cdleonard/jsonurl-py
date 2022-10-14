@@ -120,12 +120,15 @@ def _parse_dict(arg: str, pos: int, first_key: Any) -> Tuple[list, int]:
         char = arg[pos]
         if char == ")":
             return ret, pos + 1
+        if char == ",":
+            pos += 1
         key, pos = _parse_atom(arg, pos)
         if pos == len(arg):
             raise ParseError(f"Unterminated dict, missing value")
         char = arg[pos]
-        if char != ",":
-            raise ParseError(f"Unexpected char {char!r} at pos {pos}, expected ,")
+        if char != ":":
+            raise ParseError(f"Unexpected char {char!r} at pos {pos}, expected :")
+        pos += 1
         val, pos = _parse_any(arg, pos)
         ret[key] = val
 

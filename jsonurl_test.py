@@ -25,6 +25,10 @@ def test_loads_dict():
     assert jsonurl.loads("(a:1)") == dict(a=1)
 
 
+def test_loads_dict_many():
+    assert jsonurl.loads("(a:1,b:2,c:3)") == dict(a=1, b=2, c=3)
+
+
 def test_loads_list():
     assert jsonurl.loads("(a,b)") == ["a", "b"]
     assert jsonurl.loads("(true,false,1,null)") == [True, False, 1, None]
