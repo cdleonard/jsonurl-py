@@ -1,3 +1,4 @@
+import pytest
 import jsonurl
 
 
@@ -33,3 +34,8 @@ def test_loads_list():
     assert jsonurl.loads("(a,b)") == ["a", "b"]
     assert jsonurl.loads("(true,false,1,null)") == [True, False, 1, None]
     assert jsonurl.loads("(a,(1,2),b)") == ["a", [1, 2], "b"]
+
+
+def test_empty_input():
+    with pytest.raises(jsonurl.ParseError):
+        jsonurl.loads("")
