@@ -155,6 +155,8 @@ def _parse_any(arg: str, pos: int) -> Tuple[Any, int]:
     if pos == len(arg):
         raise ParseError(f"Unexpected end of input")
     if arg[pos] == "(":
+        if pos < len(arg) and arg[pos + 1] == ")":
+            return {}, pos + 2
         return _parse_compound(arg, pos + 1)
     else:
         return _parse_atom(arg, pos)
