@@ -79,6 +79,8 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
     ret = ""
     while True:
         if pos == len(arg):
+            if len(ret) == 0:
+                raise ParseError(f"Unexpected empty value at pos {pos}")
             return _convert_unquoted_atom(ret), pos
         char = arg[pos]
         if arg[pos] == "%":
@@ -91,6 +93,8 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
             ret += char
             pos += 1
         else:
+            if len(ret) == 0:
+                raise ParseError(f"Unexpected empty value at pos {pos}")
             return _convert_unquoted_atom(ret), pos
 
 
