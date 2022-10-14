@@ -1,0 +1,16 @@
+[project]
+name = "jsonurl-py"
+version = "0.0.0"
+authors = [{ name = "Leonard Crestez", email = "cdleonard@gmail.com" }]
+license = { file = "LICENSE.txt" }
+
+[project.optional-dependencies]
+test = ["pytest"]
+hack = ["tox", "black", "pre-commit"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["jsonurl"]
