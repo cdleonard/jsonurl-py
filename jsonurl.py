@@ -148,6 +148,8 @@ def _parse_compound(arg: str, pos: int) -> Tuple[Any, int]:
         return _parse_dict(arg, pos, val)
     if char == ",":
         return _parse_list(arg, pos, val)
+    if char == ")":
+        return _parse_list(arg, pos, val)
     raise ParseError(f"Unexpected char {char} at pos {pos}, expected , or :")
 
 
