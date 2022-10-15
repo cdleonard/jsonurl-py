@@ -68,6 +68,10 @@ def test_nonumber():
     assert "1" == jsonurl.loads("%31")
 
 
+def test_qstr():
+    assert 'abc' == jsonurl.loads("'abc'")
+
+
 ERROR_STRINGS = [
     "(",
     ")",

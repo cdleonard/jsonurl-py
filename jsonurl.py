@@ -79,6 +79,28 @@ def _convert_unquoted_atom(arg: Optional[str], decstr: str) -> Any:
     return decstr
 
 
+def _parse_qstr(arg: str, pos: int) -> Tuple[str, int]:
+    """Parse a quoted string until the closing '"""
+    ret = ''
+    while True:
+        if pos == len(arg):
+            raise ParseError(f"Unterminated quoted string")
+        char = arg[pos]
+        if char == "%":
+            enc, pos = _parse_percent(arg, pos)
+            ret += enc
+        elif char == "+":
+            ret += " "
+            pos += 1
+        elif char == "'":
+            return ret, pos + 1
+        elif _is_unencoded(char) or char in '(,:)':
+            ret += char
+            pos += 1
+        else:
+            raise ParseError(f"Unexpected char {char!r} in quoted string at pos {pos}")
+
+
 def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
     """Parse an atom: string, int, bool, null"""
     # on-the-fly decoding into ret
@@ -88,6 +110,9 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
     ret = ""
     if pos == len(arg):
         raise ParseError(f"Unexpected empty value at pos {pos}")
+    char = arg[pos]
+    if char == "'":
+        return _parse_qstr(arg, pos + 1)
     while True:
         if pos == len(arg):
             if len(ret) == 0:
