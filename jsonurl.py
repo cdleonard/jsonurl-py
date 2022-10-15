@@ -27,7 +27,8 @@ def dumps(arg: Any) -> str:
     raise ValueError(f"Bad value {arg!r} of type {type(arg)}")
 
 
-RE_NUMBER = re.compile("^[0-9]+$")
+RE_NUMBER = re.compile(r"^-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?$");
+RE_INT_NUMBER = re.compile(r"^-?\d+$");
 RE_UNRESERVED = re.compile("[a-zA-Z0-9-_.~]")
 
 
@@ -69,7 +70,10 @@ def _convert_unquoted_atom(arg: str) -> Any:
     if arg == "false":
         return False
     if re.match(RE_NUMBER, arg):
-        return int(arg)
+        if re.match(RE_INT_NUMBER, arg):
+            return int(arg)
+        else:
+            return float(arg)
     else:
         return arg
 
