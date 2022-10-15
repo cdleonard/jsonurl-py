@@ -49,6 +49,10 @@ def test_one_item_list():
     assert [1] == jsonurl.loads("(1)")
 
 
+def test_one_item_nested_list():
+    assert [[1]] == jsonurl.loads("((1))")
+
+
 ERROR_STRINGS = [
     "(",
     ")",
