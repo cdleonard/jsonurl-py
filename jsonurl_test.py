@@ -1,5 +1,5 @@
 import pytest
-import jsonurl
+import jsonurl_py as jsonurl
 
 
 def test_dumps():
