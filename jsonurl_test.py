@@ -114,3 +114,40 @@ ERROR_STRINGS = [
 def test_errors_strings(arg: str):
     with pytest.raises(jsonurl.ParseError):
         jsonurl.loads(arg)
+
+
+PARSE_DATA = [
+    ["()", {}],
+    [
+        "(true:true,false:false,null:null,empty:(),single:(0),nested:((1)),many:(-1,2.0,3e1,4e-2,5e0))",
+        {
+            True: True,
+            False: False,
+            None: None,
+            "empty": {},
+            "single": [0],
+            "nested": [[1]],
+            "many": [-1, 2.0, 3e1, 4e-2, 5],
+        },
+    ],
+    ["(1)", [1]],
+    ["(1,(2))", [1, [2]]],
+    ["(1,(a:2),3)", [1, {"a": 2}, 3]],
+    [
+        "(age:64,name:(first:Fred))",
+        {
+            "age": 64,
+            "name": {"first": "Fred"},
+        },
+    ],
+    ["(null,null)", [None, None]],
+    ["(a:b,c:d,e:f)", {"a": "b", "c": "d", "e": "f"}],
+    ["Bob's+house", "Bob's house"],
+    ["(%26true)", ["&true"]],
+    ["((%26true))", [["&true"]]],
+]
+
+@pytest.mark.parametrize("arg_out", PARSE_DATA)
+def test_parse_data(arg_out):
+    arg, out = arg_out
+    assert jsonurl.loads(arg) == out
