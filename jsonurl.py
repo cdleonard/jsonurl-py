@@ -1,5 +1,5 @@
 import re
-from typing import Any, Tuple
+from typing import Any, Tuple, Optional
 from urllib.parse import quote_plus
 
 
@@ -62,7 +62,9 @@ def _is_unencoded(char: str) -> bool:
     return char in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~!$*/;?@]'
 
 
-def _convert_unquoted_atom(arg: str) -> Any:
+def _convert_unquoted_atom(arg: Optional[str], decstr: str) -> Any:
+    if arg is None:
+        return decstr
     if arg == "null":
         return None
     if arg == "true":
@@ -74,32 +76,44 @@ def _convert_unquoted_atom(arg: str) -> Any:
             return int(arg)
         else:
             return float(arg)
-    else:
-        return arg
+    return decstr
 
 
 def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
     """Parse an atom: string, int, bool, null"""
+    # on-the-fly decoding into ret
+    # raw contains the string without decoding to check for unquoted atoms.
+    maybe_unquoted = True
+    raw = ""
     ret = ""
+    if pos == len(arg):
+        raise ParseError(f"Unexpected empty value at pos {pos}")
     while True:
         if pos == len(arg):
             if len(ret) == 0:
                 raise ParseError(f"Unexpected empty value at pos {pos}")
-            return _convert_unquoted_atom(ret), pos
+            return _convert_unquoted_atom(raw, ret), pos
         char = arg[pos]
         if arg[pos] == "%":
             enc, pos = _parse_percent(arg, pos)
             ret += enc
+            # no unquoted atom contains a percent
+            raw = None
+            maybe_unquoted = False
         elif arg[pos] == "+":
             ret += " "
+            if maybe_unquoted:
+                raw += "+"
             pos += 1
-        elif _is_unencoded(char):
+        elif _is_unencoded(char) or char == "'":
             ret += char
+            if maybe_unquoted:
+                raw += char
             pos += 1
         else:
             if len(ret) == 0:
                 raise ParseError(f"Unexpected empty value at pos {pos}")
-            return _convert_unquoted_atom(ret), pos
+            return _convert_unquoted_atom(raw, ret), pos
 
 
 def _parse_list(arg: str, pos: int, first_element: Any) -> Tuple[list, int]:
