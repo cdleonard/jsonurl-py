@@ -61,6 +61,11 @@ def test_number():
     assert 1.2 == jsonurl.loads("1.2")
     assert -1e3 == jsonurl.loads("-1e3")
     assert 3.2e-5 == jsonurl.loads("3.2e-5")
+    assert 3.2e+5 == jsonurl.loads("3.2e+5")
+
+
+def test_nonumber():
+    assert "1" == jsonurl.loads("%31")
 
 
 ERROR_STRINGS = [
