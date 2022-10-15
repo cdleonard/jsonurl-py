@@ -29,7 +29,6 @@ def dumps(arg: Any) -> str:
 
 RE_NUMBER = re.compile(r"^-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?$");
 RE_INT_NUMBER = re.compile(r"^-?\d+$");
-RE_UNRESERVED = re.compile("[a-zA-Z0-9-_.~]")
 
 
 class ParseError(Exception):
@@ -58,8 +57,9 @@ def _parse_percent(arg: str, pos: int) -> Tuple[str, int]:
     return bytes(arr).decode("utf-8"), pos
 
 
-def _is_unreserved(char: str) -> bool:
-    return RE_UNRESERVED.match(char) is not None
+def _is_unencoded(char: str) -> bool:
+    """If one of the sharacters listed as "unencoded" in jsonurl spec"""
+    return char in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~!$*/;?@]'
 
 
 def _convert_unquoted_atom(arg: str) -> Any:
@@ -93,7 +93,7 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
         elif arg[pos] == "+":
             ret += " "
             pos += 1
-        elif _is_unreserved(char):
+        elif _is_unencoded(char):
             ret += char
             pos += 1
         else:
