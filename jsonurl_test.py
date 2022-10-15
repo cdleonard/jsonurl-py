@@ -41,6 +41,10 @@ def test_empty_input():
         jsonurl.loads("")
 
 
+def test_unenc():
+    assert "a~/*b" == jsonurl.loads("a~/*b")
+
+
 def test_empty_composite():
     assert {} == jsonurl.loads("()")
 
