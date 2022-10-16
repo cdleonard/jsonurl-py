@@ -7,6 +7,7 @@ See https://jsonurl.org/ and https://github.com/jsonurl/specification/
 __version__ = "0.1.0"
 
 import re
+import sys
 from typing import Any, Tuple, Optional
 from urllib.parse import quote_plus
 
@@ -232,3 +233,32 @@ def _parse_top(arg: str, pos: int) -> Any:
 
 def loads(arg: str):
     return _parse_top(arg, 0)
+
+
+def create_parser():
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(description=__doc__, prog="jsonurl-py")
+    subtop = parser.add_subparsers(dest="subcmd", metavar="SUBCMD", required=True)
+    sub = subtop.add_parser("load", help="Parse JSONURL input and output JSON")
+    sub.add_argument("--indent", type=int, help="Output indent spaces per level")
+    subtop.add_parser("dump", help="Parse JSON input and output JSONURL")
+    return parser
+
+
+def main(argv=None):
+    import json
+
+    opts = create_parser().parse_args(argv)
+    if opts.subcmd == "load":
+        input = sys.stdin.read().rstrip("\n")
+        data = loads(input)
+        sys.stdout.write(json.dumps(data, indent=opts.indent) + '\n')
+    elif opts.subcmd == "dump":
+        input = sys.stdin.read()
+        data = json.loads(input)
+        sys.stdout.write(dumps(data) + "\n")
+
+
+if __name__ == "__main__":
+    main()
