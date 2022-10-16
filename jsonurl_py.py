@@ -123,8 +123,7 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
     """Parse an atom: string, int, bool, null"""
     # on-the-fly decoding into ret
     # raw contains the string without decoding to check for unquoted atoms.
-    maybe_unquoted = True
-    raw = ""
+    raw: Optional[str] = ""
     ret = ""
     if pos == len(arg):
         raise ParseError(f"Unexpected empty value at pos {pos}")
@@ -142,15 +141,14 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
             ret += enc
             # no unquoted atom contains a percent
             raw = None
-            maybe_unquoted = False
         elif arg[pos] == "+":
             ret += " "
-            if maybe_unquoted:
+            if raw is not None:
                 raw += "+"
             pos += 1
         elif _is_unencoded(char) or char == "'":
             ret += char
-            if maybe_unquoted:
+            if raw is not None:
                 raw += char
             pos += 1
         else:
