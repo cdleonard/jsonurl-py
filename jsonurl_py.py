@@ -176,7 +176,7 @@ def _parse_list(arg: str, pos: int, first_element: Any) -> Tuple[list, int]:
         raise ParseError(f"Unexpected char {char!r} at pos {pos} in list")
 
 
-def _parse_dict(arg: str, pos: int, first_key: Any) -> Tuple[list, int]:
+def _parse_dict(arg: str, pos: int, first_key: Any) -> Tuple[dict, int]:
     first_val, pos = _parse_atom(arg, pos)
     ret = {first_key: first_val}
     while True:
