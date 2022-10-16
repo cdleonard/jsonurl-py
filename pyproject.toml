@@ -13,7 +13,7 @@ Home = "https://github.com/cdleonard/jsonurl-py"
 jsonurl-py = "jsonurl_py:main"
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = ["pytest", "pytest-benchmark"]
 hack = ["tox", "black", "pre-commit", "flit"]
 
 [build-system]
