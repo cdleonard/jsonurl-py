@@ -9,6 +9,9 @@ dynamic = ["version", "description"]
 [project.urls]
 Home = "https://github.com/cdleonard/jsonurl-py"
 
+[project.scripts]
+jsonurl-py = "jsonurl_py:main"
+
 [project.optional-dependencies]
 test = ["pytest"]
 hack = ["tox", "black", "pre-commit", "flit"]
