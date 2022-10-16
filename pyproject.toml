@@ -2,6 +2,7 @@
 name = "jsonurl-py"
 version = "0.0.0"
 authors = [{ name = "Leonard Crestez", email = "cdleonard@gmail.com" }]
+readme = "README.rst"
 license = { file = "LICENSE" }
 classifiers = ["License :: OSI Approved :: MIT License"]
 
