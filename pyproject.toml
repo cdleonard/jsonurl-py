@@ -2,7 +2,8 @@
 name = "jsonurl-py"
 version = "0.0.0"
 authors = [{ name = "Leonard Crestez", email = "cdleonard@gmail.com" }]
-license = { file = "LICENSE.txt" }
+license = { file = "LICENSE" }
+classifiers = ["License :: OSI Approved :: MIT License"]
 
 [project.optional-dependencies]
 test = ["pytest"]
