@@ -1,3 +1,11 @@
+"""
+Python implementation of jsonurl, an alternative format for JSON data model
+
+See https://jsonurl.org/ and https://github.com/jsonurl/specification/
+"""
+
+__version__ = "0.1.0"
+
 import re
 from typing import Any, Tuple, Optional
 from urllib.parse import quote_plus
