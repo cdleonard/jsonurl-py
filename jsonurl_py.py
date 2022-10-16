@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 """
 Python implementation of jsonurl, an alternative format for JSON data model
 
