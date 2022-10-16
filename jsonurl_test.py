@@ -1,4 +1,7 @@
+import json
+
 import pytest
+
 import jsonurl_py as jsonurl
 
 
@@ -61,7 +64,7 @@ def test_number():
     assert 1.2 == jsonurl.loads("1.2")
     assert -1e3 == jsonurl.loads("-1e3")
     assert 3.2e-5 == jsonurl.loads("3.2e-5")
-    assert 3.2e+5 == jsonurl.loads("3.2e+5")
+    assert 3.2e5 == jsonurl.loads("3.2e+5")
 
 
 def test_nonumber():
@@ -69,7 +72,7 @@ def test_nonumber():
 
 
 def test_qstr():
-    assert 'abc' == jsonurl.loads("'abc'")
+    assert "abc" == jsonurl.loads("'abc'")
 
 
 ERROR_STRINGS = [
@@ -146,6 +149,7 @@ PARSE_DATA = [
     ["(%26true)", ["&true"]],
     ["((%26true))", [["&true"]]],
 ]
+
 
 @pytest.mark.parametrize("arg_out", PARSE_DATA)
 def test_parse_data(arg_out):

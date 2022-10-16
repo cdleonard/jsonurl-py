@@ -10,7 +10,7 @@ __version__ = "0.1.0"
 
 import re
 import sys
-from typing import Any, Tuple, Optional
+from typing import Any, Optional, Tuple
 from urllib.parse import quote_plus
 
 
@@ -38,8 +38,8 @@ def dumps(arg: Any) -> str:
     raise ValueError(f"Bad value {arg!r} of type {type(arg)}")
 
 
-RE_NUMBER = re.compile(r"^-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?$");
-RE_INT_NUMBER = re.compile(r"^-?\d+$");
+RE_NUMBER = re.compile(r"^-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?$")
+RE_INT_NUMBER = re.compile(r"^-?\d+$")
 
 
 class ParseError(Exception):
@@ -68,9 +68,14 @@ def _parse_percent(arg: str, pos: int) -> Tuple[str, int]:
     return bytes(arr).decode("utf-8"), pos
 
 
+_UNENCODED_CHAR_LIST = (
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~!$*/;?@]"
+)
+
+
 def _is_unencoded(char: str) -> bool:
     """If one of the sharacters listed as "unencoded" in jsonurl spec"""
-    return char in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~!$*/;?@]'
+    return char in _UNENCODED_CHAR_LIST
 
 
 def _convert_unquoted_atom(arg: Optional[str], decstr: str) -> Any:
@@ -92,7 +97,7 @@ def _convert_unquoted_atom(arg: Optional[str], decstr: str) -> Any:
 
 def _parse_qstr(arg: str, pos: int) -> Tuple[str, int]:
     """Parse a quoted string until the closing '"""
-    ret = ''
+    ret = ""
     while True:
         if pos == len(arg):
             raise ParseError(f"Unterminated quoted string")
@@ -105,7 +110,7 @@ def _parse_qstr(arg: str, pos: int) -> Tuple[str, int]:
             pos += 1
         elif char == "'":
             return ret, pos + 1
-        elif _is_unencoded(char) or char in '(,:)':
+        elif _is_unencoded(char) or char in "(,:)":
             ret += char
             pos += 1
         else:
@@ -255,7 +260,7 @@ def main(argv=None):
     if opts.subcmd == "load":
         input = sys.stdin.read().rstrip("\n")
         data = loads(input)
-        sys.stdout.write(json.dumps(data, indent=opts.indent) + '\n')
+        sys.stdout.write(json.dumps(data, indent=opts.indent) + "\n")
     elif opts.subcmd == "dump":
         input = sys.stdin.read()
         data = json.loads(input)
