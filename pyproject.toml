@@ -6,7 +6,7 @@ license = { file = "LICENSE.txt" }
 
 [project.optional-dependencies]
 test = ["pytest"]
-hack = ["tox", "black", "pre-commit"]
+hack = ["tox", "black", "pre-commit", "flit"]
 
 [build-system]
 requires = ["setuptools"]
