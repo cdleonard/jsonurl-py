@@ -31,6 +31,8 @@ def dumps(arg: Any) -> str:
         return quote_plus(arg)
     if isinstance(arg, int):
         return str(arg)
+    if isinstance(arg, float):
+        return str(arg)
     if isinstance(arg, list):
         return "(" + ",".join(dumps(x) for x in arg) + ")"
     if isinstance(arg, dict):

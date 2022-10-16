@@ -67,6 +67,18 @@ def test_number():
     assert 3.2e5 == jsonurl.loads("3.2e+5")
 
 
+def test_dumps_float():
+    assert "1.2" == jsonurl.dumps(1.2)
+    assert "1000.0" == jsonurl.dumps(1e3)
+    assert "1000.0" == json.dumps(1e3)
+
+
+def test_error_on_plus_number():
+    with pytest.raises(Exception):
+        json.loads("+123")
+    assert jsonurl.loads("+123") == " 123"
+
+
 def test_nonumber():
     assert "1" == jsonurl.loads("%31")
 
