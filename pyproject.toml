@@ -6,6 +6,9 @@ readme = "README.rst"
 license = { file = "LICENSE" }
 classifiers = ["License :: OSI Approved :: MIT License"]
 
+[project.urls]
+Home = "https://github.com/cdleonard/jsonurl-py"
+
 [project.optional-dependencies]
 test = ["pytest"]
 hack = ["tox", "black", "pre-commit", "flit"]
