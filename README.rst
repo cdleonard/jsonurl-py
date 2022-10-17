@@ -15,14 +15,16 @@ Installation
 ------------
 ::
 
-    pip install https://github.com/cdleonard/jsonurl-py
+    pip install jsonurl-py
 
-
-The package name is jsonurl_py to avoid confusing with an `unrelated jsonurl
+The package name is jsonurl_py to avoid confusion with an `unrelated jsonurl
 package <https://pypi.org/project/jsonurl/>`_ on pypi which implements an
-unrelated syntax. The project name uses a dash in the name for consistency with
-the existing `jsonurl-js <https://github.com/jsonurl/jsonurl-js>`_ and
-`jsonurl-java <https://github.com/jsonurl/jsonurl-java>`_ implementations.
+unrelated syntax. In theory you can install and import both packages without
+having them interfere with each other.
+
+The project name uses a dash in the name for consistency with the existing
+`jsonurl-js <https://github.com/jsonurl/jsonurl-js>`_ and `jsonurl-java
+<https://github.com/jsonurl/jsonurl-java>`_ implementations.
 
 Usage
 -----
