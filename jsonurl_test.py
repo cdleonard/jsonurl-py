@@ -11,6 +11,11 @@ def test_dumps():
     assert jsonurl.dumps(dict(a="b$c")) == "(a:b%24c)"
 
 
+def test_dump_empty_string():
+    assert "''" == jsonurl.dumps("")
+    assert "(a:'')" == jsonurl.dumps(dict(a=""))
+
+
 def test_percent():
     jsonurl._parse_percent("%31", 0)[0] == chr(0x11)
     jsonurl._parse_percent("%41%42", 0)[0] == chr(0x41) + chr(0x42)

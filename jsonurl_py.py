@@ -28,6 +28,8 @@ def dumps(arg: Any) -> str:
             return "'false'"
         if arg == "null":
             return "'null'"
+        if arg == "":
+            return "''"
         return quote_plus(arg)
     if isinstance(arg, int):
         return str(arg)
