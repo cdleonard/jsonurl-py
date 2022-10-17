@@ -43,6 +43,13 @@ class CommonOpts:
     See `spec section 2.9.2 <https://github.com/jsonurl/specification/#296-address-bar-query-string-friendly>`_
     """
 
+    aqf: bool = False
+    """Address bar Query string Friendly
+
+    Use ``!`` quoting instead of ``'`` as per `spec section 2.9.6
+    <https://github.com/jsonurl/specification/#296-address-bar-query-string-friendly>`_
+    """
+
 
 @dataclass_kwonly
 class DumpOpts(CommonOpts):
@@ -61,18 +68,31 @@ def _dump_dict_data(arg: Any, opts: DumpOpts) -> str:
     )
 
 
-def _dump_str(arg: str) -> str:
-    if arg == "true":
-        return "'true'"
-    if arg == "false":
-        return "'false'"
-    if arg == "null":
-        return "'null'"
-    if arg == "":
-        return "''"
-    if RE_NUMBER.match(arg):
-        return "'" + arg + "'"
-    return quote_plus(arg)
+def _dump_str(arg: str, opts: DumpOpts) -> str:
+    if opts.aqf:
+        if arg == "true":
+            return "!true"
+        if arg == "false":
+            return "!false"
+        if arg == "null":
+            return "!null"
+        if arg == "":
+            return "!e"
+        if RE_NUMBER.match(arg):
+            return "!" + arg
+        return quote_plus(arg, safe="!").replace("!", "!!")
+    else:
+        if arg == "true":
+            return "'true'"
+        if arg == "false":
+            return "'false'"
+        if arg == "null":
+            return "'null'"
+        if arg == "":
+            return "''"
+        if RE_NUMBER.match(arg):
+            return "'" + arg + "'"
+        return quote_plus(arg)
 
 
 def _dump_any(arg: Any, opts: DumpOpts) -> str:
@@ -83,7 +103,7 @@ def _dump_any(arg: Any, opts: DumpOpts) -> str:
     if arg is None:
         return "null"
     if isinstance(arg, str):
-        return _dump_str(arg)
+        return _dump_str(arg, opts)
     if isinstance(arg, int):
         return str(arg)
     if isinstance(arg, float):
@@ -106,6 +126,7 @@ def dumps(
     *,
     implied_list: bool = False,
     implied_dict: bool = False,
+    aqf: bool = False,
 ) -> str:
     ...
 
@@ -175,21 +196,43 @@ def _is_unencoded(char: str) -> bool:
     return char in _UNENCODED_CHAR_LIST
 
 
-def _convert_unquoted_atom(arg: Optional[str], decstr: str) -> Any:
-    if arg is None:
-        return decstr
-    if arg == "null":
-        return None
-    if arg == "true":
-        return True
-    if arg == "false":
-        return False
-    if re.match(RE_NUMBER, arg):
-        if re.match(RE_INT_NUMBER, arg):
-            return int(arg)
+def unquote_aqf(arg: str) -> str:
+    ret = ""
+    spos = 0
+    while True:
+        epos = arg.find("!", spos)
+        if epos == -1:
+            return ret + arg[spos:]
+        if epos == len(arg) - 1:
+            raise ParseError(f"Invalid trailing ! in atom {arg!r}")
+        eval = arg[epos + 1]
+        if eval in "();,0123456789+-!efnt":
+            ret += arg[spos:epos] + eval
+            spos = epos + 2
         else:
-            return float(arg)
-    return decstr
+            raise ParseError(f"Invalid escaped char 0x{hex(ord(eval))}")
+
+
+def _convert_unquoted_atom(arg: Optional[str], decstr: str, opts: LoadOpts) -> Any:
+    if arg is not None:
+        if arg == "null":
+            return None
+        if arg == "true":
+            return True
+        if arg == "false":
+            return False
+        if re.match(RE_NUMBER, arg):
+            if re.match(RE_INT_NUMBER, arg):
+                return int(arg)
+            else:
+                return float(arg)
+    if opts.aqf:
+        if decstr == "!e":
+            return ""
+        else:
+            return unquote_aqf(decstr)
+    else:
+        return decstr
 
 
 def _load_qstr(arg: str, pos: int) -> Tuple[str, int]:
@@ -217,39 +260,60 @@ def _load_qstr(arg: str, pos: int) -> Tuple[str, int]:
 def _load_atom(arg: str, pos: int, opts: LoadOpts) -> Tuple[Any, int]:
     """Parse an atom: string, int, bool, null"""
     # on-the-fly decoding into ret
+    ret = ""
     # raw contains the string without decoding to check for unquoted atoms.
     raw: Optional[str] = ""
-    ret = ""
+    # If the last character was !, only in AQF mode
+    last_was_escape = False
     if pos == len(arg):
         raise ParseError(f"Unexpected empty value at pos {pos}")
     char = arg[pos]
-    if char == "'":
+    if char == "'" and not opts.aqf:
         return _load_qstr(arg, pos + 1)
     while True:
         if pos == len(arg):
             if len(ret) == 0:
                 raise ParseError(f"Unexpected empty value at pos {pos}")
-            return _convert_unquoted_atom(raw, ret), pos
+            return _convert_unquoted_atom(raw, ret, opts), pos
         char = arg[pos]
-        if arg[pos] == "%":
+        if char == "%":
             enc, pos = _load_percent(arg, pos)
             ret += enc
             # no unquoted atom contains a percent
             raw = None
-        elif arg[pos] == "+":
+            # allow escaped char after %21
+            last_was_escape = opts.aqf and enc[-1] == "!"
+            continue
+        elif char == "+":
             ret += " "
             if raw is not None:
                 raw += "+"
             pos += 1
+            last_was_escape = False
+            continue
+        # Allow escaping structural characters with !
+        elif last_was_escape and char in "(),:!":
+            ret += char
+            if raw is not None:
+                raw += char
+            pos += 1
+            last_was_escape = False
+        elif opts.aqf and char == "!":
+            ret += char
+            if raw is not None:
+                raw += char
+            pos += 1
+            last_was_escape = True
         elif _is_unencoded(char) or char == "'":
             ret += char
             if raw is not None:
                 raw += char
             pos += 1
+            last_was_escape = False
         else:
             if len(ret) == 0:
                 raise ParseError(f"Unexpected empty value at pos {pos}")
-            return _convert_unquoted_atom(raw, ret), pos
+            return _convert_unquoted_atom(raw, ret, opts), pos
 
 
 def _load_list_data(arg: str, pos: int, opts: LoadOpts) -> list:
@@ -387,6 +451,7 @@ def loads(
     *,
     implied_dict: bool = False,
     implied_list: bool = False,
+    aqf: bool = False,
 ) -> Any:
     ...
 
