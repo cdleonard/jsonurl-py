@@ -105,6 +105,27 @@ def test_load_quote_percent():
     assert "'true'" == jsonurl.loads(r"%27true%27")
 
 
+def test_save_implied_list():
+    assert "a,'1'" == jsonurl.dumps(["a", "1"], implied_list=True)
+
+
+def test_load_implied_list():
+    assert ["a", "b"] == jsonurl.loads("a,b", implied_list=True)
+    assert ["a", {"b": "c"}] == jsonurl.loads("a,(b:c)", implied_list=True)
+    with pytest.raises(jsonurl.ParseError):
+        jsonurl.loads("a,b:c,", implied_list=True)
+    with pytest.raises(jsonurl.ParseError):
+        jsonurl.loads("a,,", implied_list=True)
+
+
+def test_save_implied_dict():
+    assert "a:'1',b:''" == jsonurl.dumps(dict(a="1", b=""), implied_dict=True)
+
+
+def test_load_implied_dict():
+    assert dict(a="1", b="") == jsonurl.loads("a:'1',b:''", implied_dict=True)
+
+
 ERROR_STRINGS = [
     "(",
     ")",
