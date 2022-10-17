@@ -15,7 +15,7 @@ jsonurl-py = "jsonurl_py:main"
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-benchmark"]
-hack = ["tox", "black", "pre-commit", "flit"]
+hack = ["tox", "black", "pre-commit", "flit", "mypy"]
 
 [build-system]
 requires = ["flit_core >=3.2,<4"]
@@ -23,3 +23,8 @@ build-backend = "flit_core.buildapi"
 
 [tool.flit.module]
 name = "jsonurl_py"
+
+[tool.mypy]
+ignore_missing_imports = true
+check_untyped_defs = true
+files = "."
