@@ -171,7 +171,7 @@ def _load_hexdigit(arg: str, pos: int) -> int:
     elif char >= "a" and char <= "f":
         return ord(char) - ord("a") + 10
     elif char >= "A" and char <= "F":
-        return ord(char) - ord("a") + 10
+        return ord(char) - ord("A") + 10
     else:
         raise ParseError(f"Invalid hex digit {char!r} at pos {pos}")
 

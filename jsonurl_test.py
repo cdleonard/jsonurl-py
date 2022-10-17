@@ -3,7 +3,12 @@ import json
 import pytest
 
 import jsonurl_py as jsonurl
-from conftest import assert_load, assert_roundtrip, assert_roundtrip_data
+from conftest import (
+    assert_load,
+    assert_load_fail,
+    assert_roundtrip,
+    assert_roundtrip_data,
+)
 
 
 def test_dumps():
@@ -15,6 +20,17 @@ def test_dumps():
 def test_dump_empty_string():
     assert "''" == jsonurl.dumps("")
     assert "(a:'')" == jsonurl.dumps(dict(a=""))
+
+
+def test_percent_caps():
+    assert_load("ll", "%6c%6C")
+    assert_load("jklmno", r"%6A%6B%6C%6D%6E%6F")
+
+
+def test_percent_error():
+    assert_load_fail(r"%6")
+    assert_load_fail(r"%6c%")
+    assert_load_fail(r"%6c%6")
 
 
 def test_dump_escape_aqf():
