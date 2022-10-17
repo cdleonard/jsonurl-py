@@ -24,9 +24,20 @@ else:
 
 
 @dataclass_kwonly
-class DumpOpts:
+class CommonOpts:
+    """
+    Common options for both `dumps` and `loads`
+    """
+
     implied_list: bool = False
     implied_dict: bool = False
+
+
+@dataclass_kwonly
+class DumpOpts(CommonOpts):
+    """
+    Options for `dumps`
+    """
 
 
 def _dump_list_data(arg: Any, opts: DumpOpts) -> str:
@@ -102,9 +113,10 @@ def dumps(arg: Any, opts=None, **kw) -> str:
 
 
 @dataclass_kwonly
-class LoadOpts:
-    implied_dict: bool = False
-    implied_list: bool = False
+class LoadOpts(CommonOpts):
+    """
+    Options for `loads` method
+    """
 
 
 RE_NUMBER = re.compile(r"^-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?$")
