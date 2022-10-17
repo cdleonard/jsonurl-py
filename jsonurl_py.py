@@ -11,7 +11,7 @@ __version__ = "0.2.0"
 import re
 import sys
 from dataclasses import dataclass
-from typing import Any, Optional, Tuple, overload
+from typing import Any, Dict, List, Optional, Tuple, overload
 from urllib.parse import quote_plus
 
 if sys.hexversion >= 0x030A0000:
@@ -226,7 +226,9 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
 
 def _parse_list_data(arg: str, pos: int, opts: LoadOpts) -> list:
     """Parse a list. pos points after the first item"""
-    ret = []
+    ret: List[Any] = []
+    if pos == len(arg):
+        return ret
     while True:
         item, pos = _parse_any(arg, pos)
         ret.append(item)
@@ -321,7 +323,9 @@ def _parse_top(arg: str, pos: int) -> Any:
 
 
 def _parse_dict_data(arg: str, pos: int, opts: LoadOpts) -> dict:
-    ret = {}
+    ret: Dict[str, Any] = {}
+    if pos == len(arg):
+        return ret
     while True:
         key, pos = _parse_atom(arg, pos)
         if pos == len(arg):
