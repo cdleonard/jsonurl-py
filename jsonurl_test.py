@@ -92,6 +92,12 @@ def test_qstr():
     assert "abc" == jsonurl.loads("'abc'")
 
 
+def test_load_quote_percent():
+    assert "'" == jsonurl.loads(r"%27")
+    assert "''" == jsonurl.loads(r"%27%27")
+    assert "'true'" == jsonurl.loads(r"%27true%27")
+
+
 ERROR_STRINGS = [
     "(",
     ")",
