@@ -12,7 +12,6 @@ jobs:
       - name: Print python version
         run: python -VV
       - name: Install dependencies
-        run: |
-          pip install -e .[test]
+        run: pip install -e .[test]
       - name: Test with pytest
         run: pytest
