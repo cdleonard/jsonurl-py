@@ -29,3 +29,6 @@ name = "jsonurl_py"
 ignore_missing_imports = true
 check_untyped_defs = true
 files = "."
+
+[tool.isort]
+profile = "black"
