@@ -40,7 +40,7 @@ class CommonOpts:
     """
     Implied-Object mode: Omit parantheses and assume data is dict
 
-    See `spec section 2.9.2 <https://github.com/jsonurl/specification/#296-address-bar-query-string-friendly>`_
+    See `spec section 2.9.2 <https://github.com/jsonurl/specification/#292-implied-objects>`_
     """
 
     aqf: bool = False
