@@ -27,3 +27,17 @@ jobs:
         run: pip install -e .[test,hack]
       - name: Run mypy
         run: mypy
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - name: Install dependencies for sphinx
+        run: pip install -e .[docs]
+      - name: Run sphinx
+        run: sphinx-build sphinx-source sphinx-output {posargs}
+      - name: Upload docus
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: sphinx-output
