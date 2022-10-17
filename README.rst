@@ -45,11 +45,6 @@ Usage
     assert jsonurl.loads('(a:1,b:c)') == {'a': 1, 'b': 'c'}
     assert jsonurl.dumps(dict(a=[1,2])) == '(a:(1,2))'
 
-Documentation
--------------
-
-Can be built locally using ``tox -e docs``. Not yet published.
-
 Command Line Interface
 ----------------------
 
@@ -65,3 +60,17 @@ It is also possible to run the executable directly via pipx::
 
     $ echo '(a:b)' | pipx run jsonurl-py load
     {"a": "b"}
+
+Documentation
+-------------
+
+Published on `github pages <https://cdleonard.github.io/jsonurl-py/docs/>`_.
+
+Can be built locally using ``tox -e docs``
+
+Testing
+-------
+
+Test run via github actions.
+
+Code coverage on main branch is published on `github pages <https://cdleonard.github.io/jsonurl-py/htmlcov/>`_.
