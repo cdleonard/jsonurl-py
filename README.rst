@@ -10,6 +10,7 @@ encodes the same data model in a way that is more suitable for use in URLs.
 See https://jsonurl.org/ and especially https://github.com/jsonurl/specification/
 
 The following optional features are supported:
+
 * `2.9.1 <https://github.com/jsonurl/specification/#291-implied-arrays>`_ Implied Arrays
 * `2.9.2 <https://github.com/jsonurl/specification/#292-implied-objects>`_ Implied Objects
 * `2.9.6 <https://github.com/jsonurl/specification/#296-address-bar-query-string-friendly>`_ AQF - Address Bar Query String Friendly
