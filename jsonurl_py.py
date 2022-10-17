@@ -30,7 +30,18 @@ class CommonOpts:
     """
 
     implied_list: bool = False
+    """
+    Implied-Array mode: Omit parantheses and assume data is list
+
+    See `spec section 2.9.1 <https://github.com/jsonurl/specification/#291-implied-arrays>`_
+    """
+
     implied_dict: bool = False
+    """
+    Implied-Object mode: Omit parantheses and assume data is dict
+
+    See `spec section 2.9.2 <https://github.com/jsonurl/specification/#296-address-bar-query-string-friendly>`_
+    """
 
 
 @dataclass_kwonly
@@ -100,6 +111,11 @@ def dumps(
 
 
 def dumps(arg: Any, opts=None, **kw) -> str:
+    """
+    Convert a json object into a jsonurl string
+
+    Options can be passed as a `DumpOpts` object or as individual keyword arguments.
+    """
     if opts is None:
         opts = DumpOpts(**kw)
     elif kw:
@@ -374,6 +390,11 @@ def loads(
 
 
 def loads(arg: str, opts=None, **kw) -> Any:
+    """
+    Convert a json object into a jsonurl string
+
+    Options can be passed as a `LoadOpts` object or as individual keyword arguments.
+    """
     if opts is None:
         opts = LoadOpts(**kw)
     elif kw:
