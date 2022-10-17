@@ -126,6 +126,22 @@ def test_load_implied_dict():
     assert dict(a="1", b="") == jsonurl.loads("a:'1',b:''", implied_dict=True)
 
 
+def test_empty_implied_list_save():
+    assert "" == jsonurl.dumps([], implied_list=True)
+
+
+def test_empty_implied_dict_save():
+    assert "" == jsonurl.dumps({}, implied_dict=True)
+
+
+def test_empty_implied_list_load():
+    assert [] == jsonurl.loads("", implied_list=True)
+
+
+def test_empty_implied_dict_load():
+    assert {} == jsonurl.loads("", implied_dict=True)
+
+
 ERROR_STRINGS = [
     "(",
     ")",
