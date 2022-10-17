@@ -71,6 +71,6 @@ Can be built locally using ``tox -e docs``
 Testing
 -------
 
-Test run via github actions.
+Tests run via github actions.
 
 Code coverage for main branch is published on `github pages <https://cdleonard.github.io/jsonurl-py/htmlcov/>`__.
