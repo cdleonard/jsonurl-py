@@ -36,7 +36,7 @@ jobs:
         run: pip install -e .[docs]
       - name: Run sphinx
         run: sphinx-build sphinx-source sphinx-output {posargs}
-      - name: Upload docus
+      - name: Upload docs
         uses: actions/upload-artifact@v3
         with:
           name: docs
