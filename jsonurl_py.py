@@ -474,29 +474,59 @@ def loads(arg: str, opts=None, **kw) -> Any:
     return _load_top(arg, 0, opts)
 
 
+def _add_common_args(parser):
+    parser.add_argument(
+        "-l",
+        "--implied-list",
+        action="store_true",
+        help="Implied Array mode",
+    )
+    parser.add_argument(
+        "-d",
+        "--implied-dict",
+        action="store_true",
+        help="Implied Object mode",
+    )
+    parser.add_argument(
+        "-a",
+        "--address-query-friendly",
+        dest="aqf",
+        action="store_true",
+        help="Address Bar Query String Friendly mode",
+    )
+
+
 def create_parser():
     from argparse import ArgumentParser
 
     parser = ArgumentParser(description=__doc__, prog="jsonurl-py")
     subtop = parser.add_subparsers(dest="subcmd", metavar="SUBCMD", required=True)
+
     sub = subtop.add_parser("load", help="Parse JSONURL input and output JSON")
+    _add_common_args(sub)
     sub.add_argument("--indent", type=int, help="Output indent spaces per level")
-    subtop.add_parser("dump", help="Parse JSON input and output JSONURL")
+
+    sub = subtop.add_parser("dump", help="Parse JSON input and output JSONURL")
+    _add_common_args(sub)
+
     return parser
 
 
 def main(argv=None):
     import json
 
+    common_keys = ["implied_list", "implied_dict", "aqf"]
     opts = create_parser().parse_args(argv)
     if opts.subcmd == "load":
+        load_opts = LoadOpts(**{k: getattr(opts, k) for k in common_keys})
         input = sys.stdin.read().rstrip("\n")
-        data = loads(input)
+        data = loads(input, load_opts)
         sys.stdout.write(json.dumps(data, indent=opts.indent) + "\n")
     elif opts.subcmd == "dump":
+        dump_opts = DumpOpts(**{k: getattr(opts, k) for k in common_keys})
         input = sys.stdin.read()
         data = json.loads(input)
-        sys.stdout.write(dumps(data) + "\n")
+        sys.stdout.write(dumps(data, dump_opts) + "\n")
 
 
 if __name__ == "__main__":
