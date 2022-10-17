@@ -34,3 +34,14 @@ Usage
 
     assert jsonurl.loads('(a:1,b:c)') == {'a': 1, 'b': 'c'}
     assert jsonurl.dumps(dict(a=[1,2])) == '(a:(1,2))'
+
+Command Line Interface
+----------------------
+
+The package includes a command line interface for converting between jsonurl and
+standard json::
+
+    $ echo "(a:b)" | jsonurl-py load
+    {"a": "b"}
+    $ echo '{"a":"b"}' | jsonurl-py dump
+    (a:b)
