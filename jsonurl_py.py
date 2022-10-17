@@ -115,7 +115,7 @@ class ParseError(Exception):
     pass
 
 
-def _parse_hexdigit(arg: str, pos: int) -> int:
+def _load_hexdigit(arg: str, pos: int) -> int:
     char = arg[pos]
     if char >= "0" and char <= "9":
         return ord(char) - ord("0")
@@ -127,12 +127,12 @@ def _parse_hexdigit(arg: str, pos: int) -> int:
         raise ParseError(f"Invalid hex digit {char!r} at pos {pos}")
 
 
-def _parse_percent(arg: str, pos: int) -> Tuple[str, int]:
+def _load_percent(arg: str, pos: int) -> Tuple[str, int]:
     arr = []
     while pos < len(arg) and arg[pos] == "%":
         if pos + 2 >= len(arg):
             raise ParseError("Unterminated percent")
-        arr.append(_parse_hexdigit(arg, pos + 1) * 16 + _parse_hexdigit(arg, pos + 2))
+        arr.append(_load_hexdigit(arg, pos + 1) * 16 + _load_hexdigit(arg, pos + 2))
         pos += 3
     return bytes(arr).decode("utf-8"), pos
 
@@ -164,7 +164,7 @@ def _convert_unquoted_atom(arg: Optional[str], decstr: str) -> Any:
     return decstr
 
 
-def _parse_qstr(arg: str, pos: int) -> Tuple[str, int]:
+def _load_qstr(arg: str, pos: int) -> Tuple[str, int]:
     """Parse a quoted string until the closing '"""
     ret = ""
     while True:
@@ -172,7 +172,7 @@ def _parse_qstr(arg: str, pos: int) -> Tuple[str, int]:
             raise ParseError(f"Unterminated quoted string")
         char = arg[pos]
         if char == "%":
-            enc, pos = _parse_percent(arg, pos)
+            enc, pos = _load_percent(arg, pos)
             ret += enc
         elif char == "+":
             ret += " "
@@ -186,7 +186,7 @@ def _parse_qstr(arg: str, pos: int) -> Tuple[str, int]:
             raise ParseError(f"Unexpected char {char!r} in quoted string at pos {pos}")
 
 
-def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
+def _load_atom(arg: str, pos: int) -> Tuple[Any, int]:
     """Parse an atom: string, int, bool, null"""
     # on-the-fly decoding into ret
     # raw contains the string without decoding to check for unquoted atoms.
@@ -196,7 +196,7 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
         raise ParseError(f"Unexpected empty value at pos {pos}")
     char = arg[pos]
     if char == "'":
-        return _parse_qstr(arg, pos + 1)
+        return _load_qstr(arg, pos + 1)
     while True:
         if pos == len(arg):
             if len(ret) == 0:
@@ -204,7 +204,7 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
             return _convert_unquoted_atom(raw, ret), pos
         char = arg[pos]
         if arg[pos] == "%":
-            enc, pos = _parse_percent(arg, pos)
+            enc, pos = _load_percent(arg, pos)
             ret += enc
             # no unquoted atom contains a percent
             raw = None
@@ -224,13 +224,13 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
             return _convert_unquoted_atom(raw, ret), pos
 
 
-def _parse_list_data(arg: str, pos: int, opts: LoadOpts) -> list:
+def _load_list_data(arg: str, pos: int, opts: LoadOpts) -> list:
     """Parse a list. pos points after the first item"""
     ret: List[Any] = []
     if pos == len(arg):
         return ret
     while True:
-        item, pos = _parse_any(arg, pos)
+        item, pos = _load_any(arg, pos)
         ret.append(item)
         if pos == len(arg):
             return ret
@@ -241,7 +241,7 @@ def _parse_list_data(arg: str, pos: int, opts: LoadOpts) -> list:
         raise ParseError(f"Unexpected char {char!r} at pos {pos} in list")
 
 
-def _parse_list(arg: str, pos: int, first_element: Any) -> Tuple[list, int]:
+def _load_list(arg: str, pos: int, first_element: Any) -> Tuple[list, int]:
     """Parse a list. pos points after the first item"""
     ret = [first_element]
     while True:
@@ -252,14 +252,14 @@ def _parse_list(arg: str, pos: int, first_element: Any) -> Tuple[list, int]:
             return ret, pos + 1
         if char == ",":
             pos += 1
-            item, pos = _parse_any(arg, pos)
+            item, pos = _load_any(arg, pos)
             ret.append(item)
             continue
         raise ParseError(f"Unexpected char {char!r} at pos {pos} in list")
 
 
-def _parse_dict(arg: str, pos: int, first_key: Any) -> Tuple[dict, int]:
-    first_val, pos = _parse_atom(arg, pos)
+def _load_dict(arg: str, pos: int, first_key: Any) -> Tuple[dict, int]:
+    first_val, pos = _load_atom(arg, pos)
     ret = {first_key: first_val}
     while True:
         if pos == len(arg):
@@ -269,34 +269,34 @@ def _parse_dict(arg: str, pos: int, first_key: Any) -> Tuple[dict, int]:
             return ret, pos + 1
         if char == ",":
             pos += 1
-        key, pos = _parse_atom(arg, pos)
+        key, pos = _load_atom(arg, pos)
         if pos == len(arg):
             raise ParseError(f"Unterminated dict, missing value")
         char = arg[pos]
         if char != ":":
             raise ParseError(f"Unexpected char {char!r} at pos {pos}, expected :")
         pos += 1
-        val, pos = _parse_any(arg, pos)
+        val, pos = _load_any(arg, pos)
         ret[key] = val
 
 
-def _parse_comp(arg: str, pos: int) -> Tuple[Any, int]:
+def _load_comp(arg: str, pos: int) -> Tuple[Any, int]:
     """Parse a composite: list or dict"""
-    val, pos = _parse_atom(arg, pos)
+    val, pos = _load_atom(arg, pos)
     if pos == len(arg):
         raise ParseError("Unterminated composite")
     char = arg[pos]
     if char == ":":
         pos += 1
-        return _parse_dict(arg, pos, val)
+        return _load_dict(arg, pos, val)
     if char == ",":
-        return _parse_list(arg, pos, val)
+        return _load_list(arg, pos, val)
     if char == ")":
-        return _parse_list(arg, pos, val)
+        return _load_list(arg, pos, val)
     raise ParseError(f"Unexpected char {char} at pos {pos}, expected , or :")
 
 
-def _parse_any(arg: str, pos: int) -> Tuple[Any, int]:
+def _load_any(arg: str, pos: int) -> Tuple[Any, int]:
     if pos == len(arg):
         raise ParseError(f"Unexpected end of input")
     if arg[pos] == "(":
@@ -305,36 +305,36 @@ def _parse_any(arg: str, pos: int) -> Tuple[Any, int]:
             raise ParseError("Unterminated composite, expected value")
         char = arg[pos]
         if char == "(":
-            first_val, pos = _parse_any(arg, pos)
-            return _parse_list(arg, pos, first_val)
+            first_val, pos = _load_any(arg, pos)
+            return _load_list(arg, pos, first_val)
         if char == ")":
             return {}, pos + 1
-        return _parse_comp(arg, pos)
+        return _load_comp(arg, pos)
     else:
-        return _parse_atom(arg, pos)
+        return _load_atom(arg, pos)
 
 
-def _parse_top(arg: str, pos: int) -> Any:
-    ret, pos = _parse_any(arg, pos)
+def _load_top(arg: str, pos: int) -> Any:
+    ret, pos = _load_any(arg, pos)
     if pos != len(arg):
         char = arg[pos]
         raise ParseError(f"Expected end of input at {pos}, got {char!r}")
     return ret
 
 
-def _parse_dict_data(arg: str, pos: int, opts: LoadOpts) -> dict:
+def _load_dict_data(arg: str, pos: int, opts: LoadOpts) -> dict:
     ret: Dict[str, Any] = {}
     if pos == len(arg):
         return ret
     while True:
-        key, pos = _parse_atom(arg, pos)
+        key, pos = _load_atom(arg, pos)
         if pos == len(arg):
             raise ParseError(f"Unterminated dict, missing value")
         char = arg[pos]
         if char != ":":
             raise ParseError(f"Unexpected char {char!r} at pos {pos}, expected :")
         pos += 1
-        val, pos = _parse_any(arg, pos)
+        val, pos = _load_any(arg, pos)
         ret[key] = val
         if pos == len(arg):
             return ret
@@ -368,10 +368,10 @@ def loads(arg: str, opts=None, **kw) -> Any:
         raise ValueError("Either opts or kw, not both")
 
     if opts.implied_dict:
-        return _parse_dict_data(arg, 0, opts)
+        return _load_dict_data(arg, 0, opts)
     if opts.implied_list:
-        return _parse_list_data(arg, 0, opts)
-    return _parse_top(arg, 0)
+        return _load_list_data(arg, 0, opts)
+    return _load_top(arg, 0)
 
 
 def create_parser():

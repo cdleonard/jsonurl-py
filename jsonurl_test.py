@@ -24,8 +24,8 @@ def test_dump_numlike_string():
 
 
 def test_percent():
-    jsonurl._parse_percent("%31", 0)[0] == chr(0x11)
-    jsonurl._parse_percent("%41%42", 0)[0] == chr(0x41) + chr(0x42)
+    jsonurl._load_percent("%31", 0)[0] == chr(0x11)
+    jsonurl._load_percent("%41%42", 0)[0] == chr(0x41) + chr(0x42)
 
 
 def test_loads_atoms():
