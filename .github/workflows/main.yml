@@ -17,7 +17,12 @@ jobs:
       - name: Install dependencies
         run: pip install -e .[test]
       - name: Test with pytest
-        run: pytest
+        run: pytest --cov --cov-report=html
+      - name: Upload htmlcov
+        uses: actions/upload-artifact@v3
+        with:
+          name: htmlcov
+          path: htmlcov
   mypy:
     runs-on: ubuntu-latest
     steps:
