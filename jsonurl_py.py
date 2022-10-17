@@ -23,6 +23,8 @@ def _dump_str(arg: str) -> str:
         return "'null'"
     if arg == "":
         return "''"
+    if RE_NUMBER.match(arg):
+        return "'" + arg + "'"
     return quote_plus(arg)
 
 
