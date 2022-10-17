@@ -14,6 +14,18 @@ from typing import Any, Optional, Tuple
 from urllib.parse import quote_plus
 
 
+def _dump_str(arg: str) -> str:
+    if arg == "true":
+        return "'true'"
+    if arg == "false":
+        return "'false'"
+    if arg == "null":
+        return "'null'"
+    if arg == "":
+        return "''"
+    return quote_plus(arg)
+
+
 def dumps(arg: Any) -> str:
     if arg is True:
         return "true"
@@ -22,15 +34,7 @@ def dumps(arg: Any) -> str:
     if arg is None:
         return "null"
     if isinstance(arg, str):
-        if arg == "true":
-            return "'true'"
-        if arg == "false":
-            return "'false'"
-        if arg == "null":
-            return "'null'"
-        if arg == "":
-            return "''"
-        return quote_plus(arg)
+        return _dump_str(arg)
     if isinstance(arg, int):
         return str(arg)
     if isinstance(arg, float):
