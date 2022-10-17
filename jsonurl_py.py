@@ -280,11 +280,11 @@ def _parse_dict(arg: str, pos: int, first_key: Any) -> Tuple[dict, int]:
         ret[key] = val
 
 
-def _parse_compound(arg: str, pos: int) -> Tuple[Any, int]:
-    """Parse a compound: list or dict"""
+def _parse_comp(arg: str, pos: int) -> Tuple[Any, int]:
+    """Parse a composite: list or dict"""
     val, pos = _parse_atom(arg, pos)
     if pos == len(arg):
-        raise ParseError("Unterminated compound")
+        raise ParseError("Unterminated composite")
     char = arg[pos]
     if char == ":":
         pos += 1
@@ -302,14 +302,14 @@ def _parse_any(arg: str, pos: int) -> Tuple[Any, int]:
     if arg[pos] == "(":
         pos += 1
         if pos == len(arg):
-            raise ParseError("Unterminated compound, expected value")
+            raise ParseError("Unterminated composite, expected value")
         char = arg[pos]
         if char == "(":
             first_val, pos = _parse_any(arg, pos)
             return _parse_list(arg, pos, first_val)
         if char == ")":
             return {}, pos + 1
-        return _parse_compound(arg, pos)
+        return _parse_comp(arg, pos)
     else:
         return _parse_atom(arg, pos)
 
