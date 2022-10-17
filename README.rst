@@ -45,3 +45,8 @@ standard json::
     {"a": "b"}
     $ echo '{"a":"b"}' | jsonurl-py dump
     (a:b)
+
+It is also possible to run the executable directly via pipx::
+
+    $ echo '(a:b)' | pipx run jsonurl-py load
+    {"a": "b"}
