@@ -1,11 +1,11 @@
 name: pages
 
 on:
-  push:
-    branches:
-      - main
-      - pages
   workflow_dispatch:
+  workflow_run:
+    workflows: [main]
+    types: [completed]
+    branches: [main, pages]
 
 permissions:
   contents: read
