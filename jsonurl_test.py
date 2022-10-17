@@ -3,6 +3,7 @@ import json
 import pytest
 
 import jsonurl_py as jsonurl
+from conftest import assert_load, assert_roundtrip, assert_roundtrip_data
 
 
 def test_dumps():
@@ -14,6 +15,45 @@ def test_dumps():
 def test_dump_empty_string():
     assert "''" == jsonurl.dumps("")
     assert "(a:'')" == jsonurl.dumps(dict(a=""))
+
+
+def test_dump_escape_aqf():
+    assert "a!!" == jsonurl.dumps("a!", aqf=True)
+
+
+def test_dump_escape_nonaqf():
+    assert "a%21" == jsonurl.dumps("a!", aqf=False)
+
+
+def test_dump_null_aqf():
+    assert "!null" == jsonurl.dumps("null", aqf=True)
+
+
+def test_load_null_aqf():
+    assert "null" == jsonurl.loads("!null", aqf=True)
+
+
+def test_aqf_escape_once():
+    assert_load(["!", ""], "!!,!e", aqf=True, implied_list=True)
+    assert_load(["!", ""], "(!!,!e)", aqf=True, implied_list=False)
+    assert_load([",", ")"], "!,,!)", aqf=True, implied_list=True)
+
+
+def test_roundtrip_aqf_escapes():
+    assert_roundtrip("a!!", "a!", aqf=True)
+    assert_roundtrip("!!", "!", aqf=True)
+    assert_roundtrip_data(
+        ["!", "a!", "!a", "!e", "e!", "!(", "", None, True, "true"],
+        aqf=True,
+        implied_list=True,
+    )
+
+
+def test_dump_empty_string_aqf():
+    assert_roundtrip("(!e:a)", {"": "a"}, aqf=True)
+    assert_roundtrip("(a:!e)", {"a": ""}, aqf=True)
+    assert_roundtrip("!e:a", {"": "a"}, aqf=True, implied_dict=True)
+    assert_roundtrip("a:!e", {"a": ""}, aqf=True, implied_dict=True)
 
 
 def test_dump_numlike_string():
@@ -140,6 +180,61 @@ def test_empty_implied_list_load():
 
 def test_empty_implied_dict_load():
     assert {} == jsonurl.loads("", implied_dict=True)
+
+
+def test_unquote_aqf():
+    assert "true" == jsonurl.unquote_aqf("true")
+    assert "true" == jsonurl.unquote_aqf("!true")
+    assert "1e23" == jsonurl.unquote_aqf("1e!23")
+    assert "1e23" == jsonurl.unquote_aqf("1!e23")
+    assert "1e-23" == jsonurl.unquote_aqf("1e!-23")
+    assert "1e+23" == jsonurl.unquote_aqf("1e!+23")
+    assert "hi!ho?" == jsonurl.unquote_aqf("hi!!ho?")
+    with pytest.raises(jsonurl.ParseError):
+        jsonurl.unquote_aqf("hi!ho?")
+
+
+def test_bool_percent():
+    assert True == jsonurl.loads("true", aqf=False)
+    assert True == jsonurl.loads("true", aqf=True)
+    assert "true" == jsonurl.loads("%74rue", aqf=False)
+    assert "true" == jsonurl.loads("%74rue", aqf=True)
+    assert "!true" == jsonurl.loads("%21%74rue", aqf=False)
+    assert "!true" == jsonurl.loads("!%74rue", aqf=False)
+    assert "!true" == jsonurl.loads("%21true", aqf=False)
+    assert "!true" == jsonurl.loads("!true", aqf=False)
+    assert "true" == jsonurl.loads("%21%74rue", aqf=True)
+    assert "true" == jsonurl.loads("!%74rue", aqf=True)
+    assert "true" == jsonurl.loads("%21true", aqf=True)
+    assert "true" == jsonurl.loads("!true", aqf=True)
+
+
+def test_more_aqf():
+    assert_load("", "!e", aqf=True)
+    assert_load("true", "!true", aqf=True)
+    assert_load("n", "!n", aqf=True)
+    assert_load("n", "%21n", aqf=True)
+    assert_load("n", "!%6e", aqf=True)
+    assert_load(")", "!)", aqf=True)
+    assert_load("true", "%74rue", aqf=True)
+    assert_load("!true", "!!true", aqf=True)
+    assert_load("false", "!false", aqf=True)
+    assert_load(True, "true", aqf=True)
+    assert_load(False, "false", aqf=True)
+    assert_load("hi!", "hi!!", aqf=True)
+    assert_load("hi)", "hi!)", aqf=True)
+
+
+def test_structural_aqf():
+    assert_load("(", "!(", aqf=True)
+    assert_load("(", "!%28", aqf=True)
+    assert_load("(", "%21(", aqf=True)
+    assert_load("(", "%21%28", aqf=True)
+    with pytest.raises(jsonurl.ParseError):
+        jsonurl.loads("%28%21", aqf=True)
+    assert_load("(!", "%28%21", aqf=False)
+    assert_load("(", "%21(", aqf=True)
+    assert_load("z(", "%7a%21%28", aqf=True)
 
 
 ERROR_STRINGS = [

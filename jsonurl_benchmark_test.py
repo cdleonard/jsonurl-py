@@ -2,12 +2,15 @@ import pytest
 
 pytest.importorskip("pytest_benchmark")
 import jsonurl_py as jsonurl
+from conftest import assert_roundtrip_data
 
 BENCHMARK_DATA = {
     "a": 1,
     "b": [1, 2, 3, 4, 5, 6],
     "aaa": "Aaa",
     "abc": "ddd",
+    "": "null",
+    "exc": ["!", "a!", "!a", "!e", "e!", "!("],
     "t": True,
     "f": False,
     "n": None,
@@ -19,6 +22,11 @@ BENCHMARK_DATA = {
         "zzz": 1e3,
     },
 }
+
+
+def test_roundtrip_aqf():
+    assert_roundtrip_data(BENCHMARK_DATA, aqf=True)
+    assert_roundtrip_data(BENCHMARK_DATA, aqf=True, implied_dict=True)
 
 
 def test_loads(benchmark):
