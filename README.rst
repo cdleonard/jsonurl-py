@@ -7,9 +7,14 @@ About
 This is a python implementation of jsonurl, an alternative text format which
 encodes the same data model in a way that is more suitable for use in URLs.
 
-See https://jsonurl.org/
+See https://jsonurl.org/ and especially https://github.com/jsonurl/specification/
 
-This is an incomplete implementation.
+The following optional features are not yet supported:
+
+* WFU - x-www-form-urlencoded Arrays and Objects
+* Implied Object Missing Values
+* Distinction between empty object and array
+* AQF - Address Bar Query String Friendly
 
 Installation
 ------------
