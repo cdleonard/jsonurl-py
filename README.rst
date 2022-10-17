@@ -35,6 +35,11 @@ Usage
     assert jsonurl.loads('(a:1,b:c)') == {'a': 1, 'b': 'c'}
     assert jsonurl.dumps(dict(a=[1,2])) == '(a:(1,2))'
 
+Documentation
+-------------
+
+Can be built locally using ``tox -e docs``. Not yet published.
+
 Command Line Interface
 ----------------------
 
