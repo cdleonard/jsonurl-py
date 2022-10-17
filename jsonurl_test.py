@@ -16,6 +16,13 @@ def test_dump_empty_string():
     assert "(a:'')" == jsonurl.dumps(dict(a=""))
 
 
+def test_dump_numlike_string():
+    assert "(a:'123')" == jsonurl.dumps(dict(a="123"))
+    assert "(a:'1e3')" == jsonurl.dumps(dict(a="1e3"))
+    assert "(a:'1e-3')" == jsonurl.dumps(dict(a="1e-3"))
+    assert "(a:%2B123)" == jsonurl.dumps(dict(a="+123"))
+
+
 def test_percent():
     jsonurl._parse_percent("%31", 0)[0] == chr(0x11)
     jsonurl._parse_percent("%41%42", 0)[0] == chr(0x41) + chr(0x42)
