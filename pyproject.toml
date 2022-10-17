@@ -8,8 +8,8 @@ dynamic = ["version", "description"]
 requires-python = ">=3.7"
 
 [project.urls]
-homepage = "https://github.com/cdleonard/jsonurl-py"
-documentation = "https://cdleonard.github.io/jsonurl-py/docs/"
+Homepage = "https://github.com/cdleonard/jsonurl-py"
+Documentation = "https://cdleonard.github.io/jsonurl-py/docs/"
 
 [project.scripts]
 jsonurl-py = "jsonurl_py:main"
