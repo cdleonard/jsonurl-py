@@ -10,8 +10,33 @@ __version__ = "0.2.0"
 
 import re
 import sys
-from typing import Any, Optional, Tuple
+from dataclasses import dataclass
+from typing import Any, Optional, Tuple, overload
 from urllib.parse import quote_plus
+
+if sys.hexversion >= 0x030A0000:
+
+    def dataclass_kwonly(*a, **kw):
+        return dataclass(*a, **kw, kw_only=True)  # type: ignore
+
+else:
+    dataclass_kwonly = dataclass
+
+
+@dataclass_kwonly
+class DumpOpts:
+    implied_list: bool = False
+    implied_dict: bool = False
+
+
+def _dump_list_data(arg: Any, opts: DumpOpts) -> str:
+    return ",".join(_dump_any(x, opts) for x in arg)
+
+
+def _dump_dict_data(arg: Any, opts: DumpOpts) -> str:
+    return ",".join(
+        _dump_any(k, opts) + ":" + _dump_any(v, opts) for k, v in arg.items()
+    )
 
 
 def _dump_str(arg: str) -> str:
@@ -28,7 +53,7 @@ def _dump_str(arg: str) -> str:
     return quote_plus(arg)
 
 
-def dumps(arg: Any) -> str:
+def _dump_any(arg: Any, opts: DumpOpts) -> str:
     if arg is True:
         return "true"
     if arg is False:
@@ -42,10 +67,44 @@ def dumps(arg: Any) -> str:
     if isinstance(arg, float):
         return str(arg)
     if isinstance(arg, list):
-        return "(" + ",".join(dumps(x) for x in arg) + ")"
+        return "(" + _dump_list_data(arg, opts) + ")"
     if isinstance(arg, dict):
-        return "(" + ",".join(dumps(k) + ":" + dumps(v) for k, v in arg.items()) + ")"
+        return "(" + _dump_dict_data(arg, opts) + ")"
     raise ValueError(f"Bad value {arg!r} of type {type(arg)}")
+
+
+@overload
+def dumps(arg: Any, opts: Optional[DumpOpts] = None) -> str:
+    ...
+
+
+@overload
+def dumps(
+    arg: Any,
+    *,
+    implied_list: bool = False,
+    implied_dict: bool = False,
+) -> str:
+    ...
+
+
+def dumps(arg: Any, opts=None, **kw) -> str:
+    if opts is None:
+        opts = DumpOpts(**kw)
+    elif kw:
+        raise ValueError("Either opts or kw, not both")
+
+    if opts.implied_dict:
+        return _dump_dict_data(arg, opts)
+    if opts.implied_list:
+        return _dump_list_data(arg, opts)
+    return _dump_any(arg, opts)
+
+
+@dataclass_kwonly
+class LoadOpts:
+    implied_dict: bool = False
+    implied_list: bool = False
 
 
 RE_NUMBER = re.compile(r"^-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?$")
@@ -165,6 +224,21 @@ def _parse_atom(arg: str, pos: int) -> Tuple[Any, int]:
             return _convert_unquoted_atom(raw, ret), pos
 
 
+def _parse_list_data(arg: str, pos: int, opts: LoadOpts) -> list:
+    """Parse a list. pos points after the first item"""
+    ret = []
+    while True:
+        item, pos = _parse_any(arg, pos)
+        ret.append(item)
+        if pos == len(arg):
+            return ret
+        char = arg[pos]
+        if char == ",":
+            pos += 1
+            continue
+        raise ParseError(f"Unexpected char {char!r} at pos {pos} in list")
+
+
 def _parse_list(arg: str, pos: int, first_element: Any) -> Tuple[list, int]:
     """Parse a list. pos points after the first item"""
     ret = [first_element]
@@ -246,7 +320,53 @@ def _parse_top(arg: str, pos: int) -> Any:
     return ret
 
 
-def loads(arg: str):
+def _parse_dict_data(arg: str, pos: int, opts: LoadOpts) -> dict:
+    ret = {}
+    while True:
+        key, pos = _parse_atom(arg, pos)
+        if pos == len(arg):
+            raise ParseError(f"Unterminated dict, missing value")
+        char = arg[pos]
+        if char != ":":
+            raise ParseError(f"Unexpected char {char!r} at pos {pos}, expected :")
+        pos += 1
+        val, pos = _parse_any(arg, pos)
+        ret[key] = val
+        if pos == len(arg):
+            return ret
+        char = arg[pos]
+        if char != ",":
+            raise ParseError(
+                f"Unexpected char {char!r} at pos {pos}, expected , or end of input"
+            )
+        pos += 1
+
+
+@overload
+def loads(arg: str, opts: Optional[LoadOpts] = None) -> Any:
+    ...
+
+
+@overload
+def loads(
+    arg: str,
+    *,
+    implied_dict: bool = False,
+    implied_list: bool = False,
+) -> Any:
+    ...
+
+
+def loads(arg: str, opts=None, **kw) -> Any:
+    if opts is None:
+        opts = LoadOpts(**kw)
+    elif kw:
+        raise ValueError("Either opts or kw, not both")
+
+    if opts.implied_dict:
+        return _parse_dict_data(arg, 0, opts)
+    if opts.implied_list:
+        return _parse_list_data(arg, 0, opts)
     return _parse_top(arg, 0)
 
 
