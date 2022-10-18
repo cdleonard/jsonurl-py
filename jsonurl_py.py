@@ -206,7 +206,7 @@ def unquote_aqf(arg: str) -> str:
         if epos == len(arg) - 1:
             raise ParseError(f"Invalid trailing ! in atom {arg!r}")
         eval = arg[epos + 1]
-        if eval in "();,0123456789+-!efnt":
+        if eval in "();,0123456789+-!fnt":
             ret += arg[spos:epos] + eval
             spos = epos + 2
         else:

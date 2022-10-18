@@ -202,7 +202,8 @@ def test_unquote_aqf():
     assert "true" == jsonurl.unquote_aqf("true")
     assert "true" == jsonurl.unquote_aqf("!true")
     assert "1e23" == jsonurl.unquote_aqf("1e!23")
-    assert "1e23" == jsonurl.unquote_aqf("1!e23")
+    with pytest.raises(jsonurl.ParseError):
+        jsonurl.unquote_aqf("1!e23")
     assert "1e-23" == jsonurl.unquote_aqf("1e!-23")
     assert "1e+23" == jsonurl.unquote_aqf("1e!+23")
     assert "hi!ho?" == jsonurl.unquote_aqf("hi!!ho?")
@@ -269,6 +270,12 @@ def test_percent_qstr():
 def test_aqf_escape_after_percent():
     assert_load("true", "%74rue", aqf=True)
     assert_load("trun", "%74ru!n", aqf=True)
+
+
+def test_aqf_e_invalid_escape():
+    assert_load_fail("a!eb", aqf=True)
+    assert_load_fail("a!e", aqf=True)
+    assert_load_fail("!ea", aqf=True)
 
 
 def test_dump_badvalue():
