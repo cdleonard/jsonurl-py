@@ -276,6 +276,13 @@ def test_dump_badvalue():
         jsonurl.dumps(dict(d=d))
 
 
+def test_badargs():
+    with pytest.raises(ValueError):
+        jsonurl.dumps("aaa", jsonurl.LoadOpts(), aqf=True)  # type: ignore
+    with pytest.raises(ValueError):
+        jsonurl.loads("aaa", jsonurl.LoadOpts(), aqf=True)  # type: ignore
+
+
 ERROR_STRINGS = [
     "(",
     ")",
