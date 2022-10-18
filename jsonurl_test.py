@@ -266,6 +266,16 @@ def test_percent_qstr():
     assert_load_fail("'ab%'")
 
 
+def test_dump_badvalue():
+    import datetime
+
+    d = datetime.datetime.now()
+    with pytest.raises(TypeError):
+        json.dumps(dict(d=d))
+    with pytest.raises(TypeError):
+        jsonurl.dumps(dict(d=d))
+
+
 ERROR_STRINGS = [
     "(",
     ")",
