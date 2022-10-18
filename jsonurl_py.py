@@ -527,6 +527,8 @@ def main(argv=None):
         input = sys.stdin.read()
         data = json.loads(input)
         sys.stdout.write(dumps(data, dump_opts) + "\n")
+    else:  # pragma: no cover
+        raise ValueError(f"Unhandled subcmd {opts.subcmd}")
 
 
 if __name__ == "__main__":
