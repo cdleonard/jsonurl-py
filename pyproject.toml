@@ -33,3 +33,6 @@ files = "."
 
 [tool.isort]
 profile = "black"
+
+[tool.coverage.run]
+branch = true
