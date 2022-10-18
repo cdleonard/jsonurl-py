@@ -15,7 +15,7 @@ Documentation = "https://cdleonard.github.io/jsonurl-py/docs/"
 jsonurl-py = "jsonurl_py:main"
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-cov", "pytest-benchmark"]
+test = ["pytest", "pytest-cov", "pytest-benchmark", "coverage-badge"]
 hack = ["tox", "black", "pre-commit", "flit", "mypy"]
 docs = ["sphinx", "sphinx-argparse", "sphinx-rtd-theme"]
 
