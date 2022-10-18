@@ -112,7 +112,7 @@ def _dump_any(arg: Any, opts: DumpOpts) -> str:
         return "(" + _dump_list_data(arg, opts) + ")"
     if isinstance(arg, dict):
         return "(" + _dump_dict_data(arg, opts) + ")"
-    raise ValueError(f"Bad value {arg!r} of type {type(arg)}")
+    raise TypeError(f"Bad value {arg!r} of type {type(arg)}")
 
 
 @overload
