@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, overload
 from urllib.parse import quote_plus
 
-if sys.hexversion >= 0x030A0000:
+if sys.hexversion >= 0x030A0000:  # pragma: no cover
 
     def dataclass_kwonly(*a, **kw):
         return dataclass(*a, **kw, kw_only=True)  # type: ignore
