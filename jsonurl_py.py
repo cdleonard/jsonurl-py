@@ -272,8 +272,8 @@ def _load_atom(arg: str, pos: int, opts: LoadOpts) -> Tuple[Any, int]:
         return _load_qstr(arg, pos + 1)
     while True:
         if pos == len(arg):
-            if len(ret) == 0:
-                raise ParseError(f"Unexpected empty value at pos {pos}")
+            # We know string is not empty because we checked it before aposthrophe
+            assert len(ret)
             return _convert_unquoted_atom(raw, ret, opts), pos
         char = arg[pos]
         if char == "%":
