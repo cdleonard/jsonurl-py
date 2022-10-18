@@ -1,4 +1,5 @@
 import json
+import string
 
 import pytest
 
@@ -299,6 +300,17 @@ def test_unterminated_dict_implied():
     assert_load_fail("a:b,c:", implied_dict=True)
     assert_load_fail("a:b,c,", implied_dict=True)
     assert_load_fail("a:b,c:d:", implied_dict=True)
+
+
+def test_unencoded_ascii_digits():
+    text = string.ascii_letters + string.digits
+    assert text == jsonurl.dumps(text)
+    assert text == jsonurl.loads(text)
+
+
+def test_load_unencoded_special():
+    text = "-._~!$*/;?@"
+    assert text == jsonurl.loads(text)
 
 
 def test_fail_load_brackets():
