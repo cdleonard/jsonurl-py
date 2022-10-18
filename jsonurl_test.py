@@ -301,6 +301,11 @@ def test_unterminated_dict_implied():
     assert_load_fail("a:b,c:d:", implied_dict=True)
 
 
+def test_fail_load_brackets():
+    for char in r"[](){}":
+        assert_load_fail(char)
+
+
 def test_dump_badvalue():
     import datetime
 

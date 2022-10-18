@@ -187,7 +187,7 @@ def _load_percent(arg: str, pos: int) -> Tuple[str, int]:
 
 
 _UNENCODED_CHAR_LIST = (
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~!$*/;?@]"
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~!$*/;?@"
 )
 
 
