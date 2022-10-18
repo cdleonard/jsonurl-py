@@ -7,7 +7,7 @@ JSON->URL PYthon implementation
 .. image:: https://img.shields.io/pypi/v/jsonurl-py.svg
    :target: https://pypi.org/project/jsonurl-py/
 
-.. image:: https://github.com/cdleonard/jsonurl-py/actions/workflows/main/badge.svg
+.. image:: https://github.com/cdleonard/jsonurl-py/actions/workflows/main.yml/badge.svg
     :target: https://github.com/cdleonard/jsonurl-py/actions
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
