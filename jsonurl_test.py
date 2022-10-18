@@ -286,6 +286,21 @@ def test_space_in_qstr():
     assert_load_fail("'a b'")
 
 
+def test_unterminated_dict():
+    assert_load_fail("(a:b,")
+    assert_load_fail("(a:b,c")
+    assert_load_fail("(a:b,c:")
+    assert_load_fail("(a:b,c:d")
+
+
+def test_unterminated_dict_implied():
+    assert_load_fail("a:b,", implied_dict=True)
+    assert_load_fail("a:b,c", implied_dict=True)
+    assert_load_fail("a:b,c:", implied_dict=True)
+    assert_load_fail("a:b,c,", implied_dict=True)
+    assert_load_fail("a:b,c:d:", implied_dict=True)
+
+
 def test_dump_badvalue():
     import datetime
 
