@@ -10,6 +10,9 @@ JSON->URL PYthon implementation
 .. image:: https://github.com/cdleonard/jsonurl-py/actions/workflows/main.yml/badge.svg
     :target: https://github.com/cdleonard/jsonurl-py/actions
 
+.. image:: https://cdleonard.github.io/jsonurl-py/htmlcov/badge.svg
+    :target: https://cdleonard.github.io/jsonurl-py/htmlcov/
+
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
