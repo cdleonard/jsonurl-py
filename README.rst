@@ -1,6 +1,15 @@
 JSON->URL PYthon implementation
 ===============================
 
+.. image:: https://img.shields.io/github/license/cdleonard/jsonurl-py.svg
+   :target: https://github.com/cdleonard/jsonurl-py/blob/master/LICENSE
+
+.. image:: https://img.shields.io/pypi/v/jsonurl-py.svg
+   :target: https://pypi.org/project/jsonurl-py/
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+
 About
 -----
 
