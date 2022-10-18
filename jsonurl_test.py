@@ -253,6 +253,19 @@ def test_structural_aqf():
     assert_load("z(", "%7a%21%28", aqf=True)
 
 
+def test_unterminated_qstr():
+    assert_load_fail("'ab")
+    assert_load_fail("a,'ab", implied_list=True)
+
+
+def test_percent_qstr():
+    assert_load("a'b", "a%27b")
+    assert_load("a'b", "'a%27b'")
+    assert_load("abc", "'ab%63'")
+    assert_load_fail("'ab%6'")
+    assert_load_fail("'ab%'")
+
+
 ERROR_STRINGS = [
     "(",
     ")",
