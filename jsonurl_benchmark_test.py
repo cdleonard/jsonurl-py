@@ -29,12 +29,15 @@ def test_roundtrip_aqf():
     assert_roundtrip_data(BENCHMARK_DATA, aqf=True, implied_dict=True)
 
 
-def test_loads(benchmark):
-    text = jsonurl.dumps(BENCHMARK_DATA)
-    data = benchmark(lambda: jsonurl.loads(text))
+@pytest.mark.parametrize("aqf", [True, False])
+def test_loads(benchmark, aqf: bool):
+    text = jsonurl.dumps(BENCHMARK_DATA, aqf=aqf)
+    data = benchmark(lambda: jsonurl.loads(text, aqf=aqf))
     assert data == BENCHMARK_DATA
 
 
-def test_dumps(benchmark):
-    text = benchmark(lambda: jsonurl.dumps(BENCHMARK_DATA))
-    assert jsonurl.loads(text) == BENCHMARK_DATA
+@pytest.mark.parametrize("aqf", [True, False])
+def test_dumps(benchmark, aqf: bool):
+    text = benchmark(lambda: jsonurl.dumps(BENCHMARK_DATA, aqf=aqf))
+    data = jsonurl.loads(text, aqf=aqf)
+    assert data == BENCHMARK_DATA
