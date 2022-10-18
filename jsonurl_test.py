@@ -278,6 +278,14 @@ def test_aqf_e_invalid_escape():
     assert_load_fail("!ea", aqf=True)
 
 
+def test_plus_in_qstr():
+    assert_load("a b", "'a+b'")
+
+
+def test_space_in_qstr():
+    assert_load_fail("'a b'")
+
+
 def test_dump_badvalue():
     import datetime
 
