@@ -266,6 +266,11 @@ def test_percent_qstr():
     assert_load_fail("'ab%'")
 
 
+def test_aqf_escape_after_percent():
+    assert_load("true", "%74rue", aqf=True)
+    assert_load("trun", "%74ru!n", aqf=True)
+
+
 def test_dump_badvalue():
     import datetime
 
