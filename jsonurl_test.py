@@ -327,6 +327,14 @@ def test_nested_list():
     assert_load([1, [2, 3]], "(1,(2,3))")
 
 
+def test_aqf_escape_colon():
+    assert_load(":", "!:", aqf=True)
+
+
+def test_aqf_escape_semicolon():
+    assert_load_fail("!;", aqf=True)
+
+
 def test_dump_badvalue():
     import datetime
 
