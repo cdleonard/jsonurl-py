@@ -215,16 +215,16 @@ def test_empty_implied_dict_load():
 
 
 def test_unquote_aqf():
-    assert "true" == jsonurl.unquote_aqf("true")
-    assert "true" == jsonurl.unquote_aqf("!true")
-    assert "1e23" == jsonurl.unquote_aqf("1e!23")
+    assert "true" == jsonurl._unquote_aqf("true")
+    assert "true" == jsonurl._unquote_aqf("!true")
+    assert "1e23" == jsonurl._unquote_aqf("1e!23")
     with pytest.raises(jsonurl.ParseError):
-        jsonurl.unquote_aqf("1!e23")
-    assert "1e-23" == jsonurl.unquote_aqf("1e!-23")
-    assert "1e+23" == jsonurl.unquote_aqf("1e!+23")
-    assert "hi!ho?" == jsonurl.unquote_aqf("hi!!ho?")
+        jsonurl._unquote_aqf("1!e23")
+    assert "1e-23" == jsonurl._unquote_aqf("1e!-23")
+    assert "1e+23" == jsonurl._unquote_aqf("1e!+23")
+    assert "hi!ho?" == jsonurl._unquote_aqf("hi!!ho?")
     with pytest.raises(jsonurl.ParseError):
-        jsonurl.unquote_aqf("hi!ho?")
+        jsonurl._unquote_aqf("hi!ho?")
 
 
 def test_bool_percent():
