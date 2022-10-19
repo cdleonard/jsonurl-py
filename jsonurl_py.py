@@ -353,7 +353,7 @@ def _load_list(
 
 
 def _load_dict(arg: str, pos: int, first_key: Any, opts: LoadOpts) -> Tuple[dict, int]:
-    first_val, pos = _load_atom(arg, pos, opts)
+    first_val, pos = _load_any(arg, pos, opts)
     ret = {first_key: first_val}
     while True:
         if pos == len(arg):

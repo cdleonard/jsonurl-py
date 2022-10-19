@@ -318,6 +318,15 @@ def test_fail_load_brackets():
         assert_load_fail(char)
 
 
+def test_dict_with_list_as_first_value():
+    assert_load({"a": [1, 2]}, "(a:(1,2))")
+
+
+def test_nested_list():
+    assert_load([[1, 2], 3], "((1,2),3)")
+    assert_load([1, [2, 3]], "(1,(2,3))")
+
+
 def test_dump_badvalue():
     import datetime
 
