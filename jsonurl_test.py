@@ -386,6 +386,11 @@ def test_unterminated_percent_message():
         jsonurl.loads("a%a", aqf=True)
 
 
+def test_invalid_bang_escape_message():
+    with pytest.raises(jsonurl.ParseError, match="Invalid !-escaped char 0x61"):
+        jsonurl.loads("!a", aqf=True)
+
+
 ERROR_STRINGS = [
     "(",
     ")",
