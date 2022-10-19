@@ -250,7 +250,7 @@ def _unquote_aqf(arg: str) -> str:
             ret += arg[spos:epos] + eval
             spos = epos + 2
         else:
-            raise ParseError(f"Invalid escaped char 0x{hex(ord(eval))}")
+            raise ParseError(f"Invalid !-escaped char {hex(ord(eval))}")
 
 
 def _convert_unquoted_atom(arg: Optional[str], decstr: str, opts: LoadOpts) -> Any:
