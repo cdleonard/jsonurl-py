@@ -204,6 +204,33 @@ def _is_unencoded(char: str) -> bool:
     return char in _UNENCODED_CHAR_LIST
 
 
+_AQF_PARTIAL_DECODE_SET = set([ord("("), ord(")"), ord(","), ord(":"), ord("!")])
+
+
+def _partial_decode_aqf(arg: str) -> str:
+    """Perform partial percent decoding for AQF
+
+    Affects (),:!+
+
+    Overlongs encodings are not handled but they would trigger an error later.
+    """
+    ret = ""
+    spos = 0
+    while True:
+        epos = arg.find("%", spos)
+        if epos == -1:
+            return ret + arg[spos:]
+        if epos + 2 >= len(arg):
+            raise ParseError(f"Unterminated percentat pos {epos}")
+        val = _load_hexdigit(arg, epos + 1) * 16 + _load_hexdigit(arg, epos + 2)
+        if val in _AQF_PARTIAL_DECODE_SET:
+            ret += arg[spos:epos] + chr(val)
+            spos = epos + 3
+        else:
+            ret += arg[spos : epos + 3]
+            spos = epos + 3
+
+
 def unquote_aqf(arg: str) -> str:
     ret = ""
     spos = 0
@@ -475,6 +502,8 @@ def loads(arg: str, opts=None, **kw) -> Any:
     elif kw:
         raise ValueError("Either opts or kw, not both")
 
+    if opts.aqf:
+        arg = _partial_decode_aqf(arg)
     if opts.implied_dict:
         return _load_dict_data(arg, 0, opts)
     if opts.implied_list:
