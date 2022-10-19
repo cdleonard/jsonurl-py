@@ -367,6 +367,18 @@ def test_badargs():
         jsonurl.loads("aaa", jsonurl.LoadOpts(), aqf=True)  # type: ignore
 
 
+def test_aqf_percent_structural():
+    assert_load(["a", "b"], r"%28a%2cb%29", aqf=True)
+    assert_load({"a": "b"}, r"%28a%3ab%29", aqf=True)
+
+
+def test_aqf_ampersand():
+    assert_load("a&b", r"a%26b", aqf=True)
+    assert_load_fail(r"a&b", aqf=True)
+    assert_load("a=b", r"a%3db", aqf=True)
+    assert_load_fail(r"a=b", aqf=True)
+
+
 ERROR_STRINGS = [
     "(",
     ")",
