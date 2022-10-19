@@ -231,7 +231,7 @@ def _partial_decode_aqf(arg: str) -> str:
             spos = epos + 3
 
 
-def unquote_aqf(arg: str) -> str:
+def _unquote_aqf(arg: str) -> str:
     ret = ""
     spos = 0
     while True:
@@ -265,7 +265,7 @@ def _convert_unquoted_atom(arg: Optional[str], decstr: str, opts: LoadOpts) -> A
         if decstr == "!e":
             return ""
         else:
-            return unquote_aqf(decstr)
+            return _unquote_aqf(decstr)
     else:
         return decstr
 
