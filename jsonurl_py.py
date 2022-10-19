@@ -303,8 +303,6 @@ def _load_atom(arg: str, pos: int, opts: LoadOpts) -> Tuple[Any, int]:
     ret = ""
     # raw contains the string without decoding to check for unquoted atoms.
     raw: Optional[str] = ""
-    # If the last character was !, only in AQF mode
-    last_was_escape = False
     if pos == len(arg):
         raise ParseError(f"Unexpected empty value at pos {pos}")
     char = arg[pos]
@@ -321,35 +319,30 @@ def _load_atom(arg: str, pos: int, opts: LoadOpts) -> Tuple[Any, int]:
             ret += enc
             # no unquoted atom contains a percent
             raw = None
-            # allow escaped char after %21
-            last_was_escape = opts.aqf and enc[-1] == "!"
             continue
         elif char == "+":
             ret += " "
             if raw is not None:
                 raw += "+"
             pos += 1
-            last_was_escape = False
             continue
-        # Allow escaping structural characters with !
-        elif last_was_escape and char in "(),:!":
-            ret += char
-            if raw is not None:
-                raw += char
-            pos += 1
-            last_was_escape = False
         elif opts.aqf and char == "!":
             ret += char
             if raw is not None:
                 raw += char
             pos += 1
-            last_was_escape = True
+            if pos < len(arg):
+                char = arg[pos]
+                if char in "(),:!":
+                    ret += char
+                    if raw is not None:
+                        raw += char
+                    pos += 1
         elif _is_unencoded(char) or char == "'":
             ret += char
             if raw is not None:
                 raw += char
             pos += 1
-            last_was_escape = False
         else:
             if len(ret) == 0:
                 raise ParseError(f"Unexpected empty value at pos {pos}")
