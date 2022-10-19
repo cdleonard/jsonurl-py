@@ -210,9 +210,14 @@ _AQF_PARTIAL_DECODE_SET = set([ord("("), ord(")"), ord(","), ord(":"), ord("!")]
 def _partial_decode_aqf(arg: str) -> str:
     """Perform partial percent decoding for AQF
 
-    Affects (),:!+
+    Affects (),:!
 
-    Overlongs encodings are not handled but they would trigger an error later.
+    All the characters involved are ascii so they can't be part of a multi-byte
+    character. Overlong encodings don't need handling either, they will reach
+    _load_percent and be rejected by the python utf-8 decoder.
+
+    This is done so that the rest of the parser can check for structural
+    characters without worrying about percent enconding.
     """
     ret = ""
     spos = 0
