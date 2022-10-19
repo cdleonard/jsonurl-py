@@ -16,14 +16,14 @@ from urllib.parse import quote_plus
 
 if sys.hexversion >= 0x030A0000:  # pragma: no cover
 
-    def dataclass_kwonly(*a, **kw):
+    def _dataclass_kwonly(*a, **kw):
         return dataclass(*a, **kw, kw_only=True)  # type: ignore
 
 else:
-    dataclass_kwonly = dataclass
+    _dataclass_kwonly = dataclass
 
 
-@dataclass_kwonly
+@_dataclass_kwonly
 class CommonOpts:
     """
     Common options for both `dumps` and `loads`
@@ -51,7 +51,7 @@ class CommonOpts:
     """
 
 
-@dataclass_kwonly
+@_dataclass_kwonly
 class DumpOpts(CommonOpts):
     """
     Options for `dumps`
@@ -157,7 +157,7 @@ def dumps(arg: Any, opts=None, **kw) -> str:
     return _dump_any(arg, opts)
 
 
-@dataclass_kwonly
+@_dataclass_kwonly
 class LoadOpts(CommonOpts):
     """
     Options for `loads` method
