@@ -188,7 +188,7 @@ def _load_percent(arg: str, pos: int) -> Tuple[str, int]:
     arr = []
     while pos < len(arg) and arg[pos] == "%":
         if pos + 2 >= len(arg):
-            raise ParseError("Unterminated percent")
+            raise ParseError(f"Unterminated percent at pos {pos}")
         arr.append(_load_hexdigit(arg, pos + 1) * 16 + _load_hexdigit(arg, pos + 2))
         pos += 3
     return bytes(arr).decode("utf-8"), pos
@@ -221,7 +221,7 @@ def _partial_decode_aqf(arg: str) -> str:
         if epos == -1:
             return ret + arg[spos:]
         if epos + 2 >= len(arg):
-            raise ParseError(f"Unterminated percentat pos {epos}")
+            raise ParseError(f"Unterminated percent at pos {epos}")
         val = _load_hexdigit(arg, epos + 1) * 16 + _load_hexdigit(arg, epos + 2)
         if val in _AQF_PARTIAL_DECODE_SET:
             ret += arg[spos:epos] + chr(val)
