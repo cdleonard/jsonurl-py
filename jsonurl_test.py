@@ -59,6 +59,21 @@ def test_aqf_escape_once():
 def test_roundtrip_aqf_escapes():
     assert_roundtrip("a!!", "a!", aqf=True)
     assert_roundtrip("!!", "!", aqf=True)
+
+
+def test_roundtrip_aqf_escape_paren():
+    assert_roundtrip("!(", "(", aqf=True)
+
+
+def test_roundtrip_aqf_structural():
+    assert_roundtrip_data(
+        ["!", "+", "(", ")", ",", ":"],
+        aqf=True,
+        implied_list=True,
+    )
+
+
+def test_roundtrip_aqf_escape_many():
     assert_roundtrip_data(
         ["!", "a!", "!a", "!e", "e!", "!(", "", None, True, "true"],
         aqf=True,
