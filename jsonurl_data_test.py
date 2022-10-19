@@ -26,12 +26,15 @@ def test(name: str):
     item = JSON_TEST_DATA[name]
     type = item.get("type", "roundtrip")
     kw = {}
-    if item.get("implied_array"):
-        kw["implied_list"] = True
-    if item.get("implied_object"):
-        kw["implied_dict"] = True
-    if item.get("aqf"):
-        kw["aqf"] = True
+    val = item.get("implied_array")
+    if val is not None:
+        kw["implied_list"] = val
+    val = item.get("implied_object")
+    if val is not None:
+        kw["implied_dict"] = val
+    val = item.get("aqf")
+    if val is not None:
+        kw["aqf"] = val
     if type == "roundtrip":
         text = item["text"]
         data = item["data"]
