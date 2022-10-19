@@ -80,7 +80,15 @@ def _dump_str(arg: str, opts: DumpOpts) -> str:
             return "!e"
         if RE_NUMBER.match(arg):
             return "!" + arg
-        return quote_plus(arg, safe="!").replace("!", "!!")
+        return quote_plus(arg, safe="(),:!").translate(
+            {
+                ord("!"): "!!",
+                ord("("): "!(",
+                ord(")"): "!)",
+                ord(","): "!,",
+                ord(":"): "!:",
+            }
+        )
     else:
         if arg == "true":
             return "'true'"
