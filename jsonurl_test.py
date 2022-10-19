@@ -379,6 +379,13 @@ def test_aqf_ampersand():
     assert_load_fail(r"a=b", aqf=True)
 
 
+def test_unterminated_percent_message():
+    with pytest.raises(jsonurl.ParseError, match="Unterminated percent at pos 2"):
+        jsonurl.loads("ab%a")
+    with pytest.raises(jsonurl.ParseError, match="Unterminated percent at pos 1"):
+        jsonurl.loads("a%a", aqf=True)
+
+
 ERROR_STRINGS = [
     "(",
     ")",
