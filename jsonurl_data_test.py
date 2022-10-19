@@ -25,17 +25,24 @@ def test(name: str):
     global JSON_TEST_DATA
     item = JSON_TEST_DATA[name]
     type = item.get("type", "roundtrip")
+    kw = {}
+    if item.get("implied_array"):
+        kw["implied_list"] = True
+    if item.get("implied_object"):
+        kw["implied_dict"] = True
+    if item.get("aqf"):
+        kw["aqf"] = True
     if type == "roundtrip":
         text = item["text"]
         data = item["data"]
-        assert jsonurl.loads(text) == data and jsonurl.dumps(data) == text
+        assert jsonurl.loads(text, **kw) == data and jsonurl.dumps(data, **kw) == text
     elif type == "load":
         text = item["text"]
         data = item["data"]
-        assert jsonurl.loads(text) == data
+        assert jsonurl.loads(text, **kw) == data
     elif type == "fail":
         text = item["text"]
         with pytest.raises(jsonurl.ParseError):
-            jsonurl.loads(text)
+            jsonurl.loads(text, **kw)
     else:
         raise ValueError("unknown data item type={type!r}")
