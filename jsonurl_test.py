@@ -350,6 +350,18 @@ def test_aqf_escape_semicolon():
     assert_load_fail("!;", aqf=True)
 
 
+def test_aqf_load_apos():
+    assert_load("'ab", "'ab", aqf=True)
+    assert_load("a'b", "a'b", aqf=True)
+    assert_load("ab'", "ab'", aqf=True)
+
+
+def test_notaqf_load_apos_mid_fail():
+    assert_load_fail("'ab", aqf=False)
+    assert_load("a'b", "a'b", aqf=False)
+    assert_load("ab'", "ab'", aqf=False)
+
+
 def test_dump_badvalue():
     import datetime
 
