@@ -328,6 +328,32 @@ def test_load_unencoded_special():
     assert text == jsonurl.loads(text)
 
 
+def test_dump_unencoded_special():
+    assert "%21%24%2A%2F%3B%3F%40" == jsonurl.dumps("!$*/;?@")
+    assert "-._~" == jsonurl.dumps("-._~")
+    assert "%24%2A%2F%3B%3F%40" == jsonurl.dumps("$*/;?@", aqf=True)
+    assert "%24%2A%2F%3B%3F%40%27" == jsonurl.dumps("$*/;?@'", aqf=True)
+
+
+def test_aqf_single_quote_safe():
+    assert "a%27b" == jsonurl.dumps("a'b", aqf=True)
+    assert "a'b" == jsonurl.dumps("a'b", safe="'", aqf=True)
+    assert "a'b" == jsonurl.loads("a'b", aqf=True)
+
+
+def test_noaqf_single_quote_safe():
+    with pytest.raises(ValueError):
+        jsonurl.dumps("a'b", safe="'")
+    assert "a%27b" == jsonurl.dumps("a'b", aqf=False)
+
+
+def test_bad_safe():
+    with pytest.raises(ValueError):
+        jsonurl.dumps("a^b", safe="^")
+    with pytest.raises(jsonurl.ParseError):
+        jsonurl.loads("a^b")
+
+
 def test_fail_load_brackets():
     for char in r"[](){}":
         assert_load_fail(char)
@@ -483,3 +509,17 @@ PARSE_DATA = [
 def test_parse_data(arg_out):
     arg, out = arg_out
     assert jsonurl.loads(arg) == out
+
+
+def test_dump_safe():
+    assert jsonurl.dumps("a'b", aqf=True) == "a%27b"
+    assert jsonurl.dumps("a^b", aqf=True) == "a%5Eb"
+    assert jsonurl.dumps("a/b", aqf=True) == "a%2Fb"
+    assert jsonurl.dumps("a@b", aqf=True) == "a%40b"
+    assert jsonurl.dumps("a/b", aqf=True, safe="/@") == "a/b"
+    assert jsonurl.dumps("a@b", aqf=True, safe="@/") == "a@b"
+    assert jsonurl.dumps("a/b", aqf=False, safe="/@") == "a/b"
+    assert jsonurl.dumps("a@b", aqf=False, safe="@/") == "a@b"
+    assert jsonurl.dumps("a-b", aqf=True) == "a-b"
+    assert jsonurl.dumps("a}{b", aqf=True) == "a%7D%7Bb"
+    assert jsonurl.dumps("a,b", aqf=True) == "a!,b"
