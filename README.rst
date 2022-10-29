@@ -28,13 +28,13 @@ The following optional features are supported:
 
 * `2.9.1 <https://github.com/jsonurl/specification/#291-implied-arrays>`_ Implied Arrays
 * `2.9.2 <https://github.com/jsonurl/specification/#292-implied-objects>`_ Implied Objects
+* `2.9.5 <https://github.com/jsonurl/specification/#295-empty-objects-and-arrays>`_ Distinction between empty object and array
 * `2.9.6 <https://github.com/jsonurl/specification/#296-address-bar-query-string-friendly>`_ AQF - Address Bar Query String Friendly
 
 The following optional features are not yet supported:
 
 * `2.9.3 <https://github.com/jsonurl/specification/#293-x-www-form-urlencoded-arrays-and-objects>`_ WFU - x-www-form-urlencoded Arrays and Objects
 * `2.9.4 <https://github.com/jsonurl/specification/#294-implied-object-missing-values>`_ Implied Object Missing Values
-* `2.9.5 <https://github.com/jsonurl/specification/#295-empty-objects-and-arrays>`_ Distinction between empty object and array
 
 Installation
 ------------
