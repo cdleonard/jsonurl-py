@@ -26,4 +26,4 @@ intersphinx_mapping = {
 autodoc_member_order = "bysource"
 
 html_theme = "sphinx_rtd_theme"
-default_role = "py:obj"
+default_role = "any"
