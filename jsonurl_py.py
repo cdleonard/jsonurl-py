@@ -6,7 +6,7 @@ Python implementation of jsonurl, an alternative format for JSON data model
 See https://jsonurl.org/ and https://github.com/jsonurl/specification/
 """
 
-__version__ = "0.3.2"
+__version__ = "0.4.0"
 
 import re
 import sys
