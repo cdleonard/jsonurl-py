@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies for sphinx
         run: pip install -e .[docs]
       - name: Run sphinx
-        run: sphinx-build sphinx-source sphinx-output {posargs}
+        run: sphinx-build sphinx-source sphinx-output -W --keep-going
       - name: Upload docs
         uses: actions/upload-artifact@v3
         with:
