@@ -523,3 +523,27 @@ def test_dump_safe():
     assert jsonurl.dumps("a-b", aqf=True) == "a-b"
     assert jsonurl.dumps("a}{b", aqf=True) == "a%7D%7Bb"
     assert jsonurl.dumps("a,b", aqf=True) == "a!,b"
+
+
+def test_distinguish_empty():
+    assert jsonurl.loads("(:)", distinguish_empty_list_dict=True) == {}
+    assert jsonurl.loads("()", distinguish_empty_list_dict=True) == []
+    assert jsonurl.loads("()", distinguish_empty_list_dict=False) == {}
+    with pytest.raises(jsonurl.ParseError):
+        assert jsonurl.loads("(:)", distinguish_empty_list_dict=False)
+
+
+def test_distinguish_error():
+    assert_load_fail("a:(:x)", distinguish_empty_list_dict=True, implied_dict=True)
+    assert_load_fail("a:(:", distinguish_empty_list_dict=True, implied_dict=True)
+    assert_load_fail("a:(", distinguish_empty_list_dict=True, implied_dict=True)
+    assert_load_fail("a:(x", distinguish_empty_list_dict=True, implied_dict=True)
+
+
+def test_distinguish_empty_complex():
+    assert_roundtrip(
+        "a:(:),b:(),c:null",
+        dict(a={}, b=[], c=None),
+        distinguish_empty_list_dict=True,
+        implied_dict=True,
+    )
