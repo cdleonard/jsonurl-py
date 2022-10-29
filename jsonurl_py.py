@@ -57,6 +57,20 @@ class DumpOpts(CommonOpts):
     Options for `jsonurl_py.dumps`
     """
 
+    safe: str = ""
+    """
+    Additional characters considered safe and not requiring percent-encoding.
+
+    This is similar to the safe argument to `urllib.parse.quote_plus`.
+
+    By default only the characters ``[a-zA-Z0-9_.-~]`` are safe. Additional
+    characters that can be marked safe are: ``!$*/;?@``. In AQF mode the
+    characters "'" can also be marked as safe.
+
+    In AQF mode the characters `!(),:` are considered safe by default so that
+    output is readable but on input they are also recognized in encoded form.
+    """
+
 
 def _dump_list_data(arg: Any, opts: DumpOpts) -> str:
     return ",".join(_dump_any(x, opts) for x in arg)
@@ -80,7 +94,7 @@ def _dump_str(arg: str, opts: DumpOpts) -> str:
             return "!e"
         if RE_NUMBER.match(arg):
             return "!" + arg
-        return quote_plus(arg, safe="(),:!").translate(
+        return quote_plus(arg, safe=opts.safe + "(),:!").translate(
             {
                 ord("!"): "!!",
                 ord("("): "!(",
@@ -100,7 +114,7 @@ def _dump_str(arg: str, opts: DumpOpts) -> str:
             return "''"
         if RE_NUMBER.match(arg):
             return "'" + arg + "'"
-        return quote_plus(arg)
+        return quote_plus(arg, safe=opts.safe)
 
 
 def _dump_any(arg: Any, opts: DumpOpts) -> str:
@@ -135,6 +149,7 @@ def dumps(
     implied_list: bool = False,
     implied_dict: bool = False,
     aqf: bool = False,
+    safe: str = "",
 ) -> str:
     ...
 
@@ -149,12 +164,23 @@ def dumps(arg: Any, opts=None, **kw) -> str:
         opts = DumpOpts(**kw)
     elif kw:
         raise ValueError("Either opts or kw, not both")
+    check_can_mark_safe(opts.safe, opts.aqf)
 
     if opts.implied_dict:
         return _dump_dict_data(arg, opts)
     if opts.implied_list:
         return _dump_list_data(arg, opts)
     return _dump_any(arg, opts)
+
+
+def check_can_mark_safe(safe: str, aqf=False):
+    """Check if a string can be marked as safe for jsonurl"""
+    for c in safe:
+        if c in "!$*/;?@":
+            continue
+        if aqf and c == "'":
+            continue
+        raise ValueError(f"Can't mark character {c!r} as safe")
 
 
 @_dataclass_kwonly
