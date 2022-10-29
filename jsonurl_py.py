@@ -43,6 +43,13 @@ class CommonOpts:
     See `spec section 2.9.2 <https://github.com/jsonurl/specification/#292-implied-objects>`_
     """
 
+    distinguish_empty_list_dict: bool = False
+    """Distinguish between empty list and empty dict
+
+    Use ``(:)`` for empty dict and ``()`` for empty list as per `spec section 2.9.5
+    <https://github.com/jsonurl/specification/#295-empty-objects-and-arrays>`_
+    """
+
     aqf: bool = False
     """Address bar Query string Friendly
 
@@ -133,7 +140,10 @@ def _dump_any(arg: Any, opts: DumpOpts) -> str:
     if isinstance(arg, list):
         return "(" + _dump_list_data(arg, opts) + ")"
     if isinstance(arg, dict):
-        return "(" + _dump_dict_data(arg, opts) + ")"
+        if len(arg) == 0 and opts.distinguish_empty_list_dict:
+            return "(:)"
+        else:
+            return "(" + _dump_dict_data(arg, opts) + ")"
     raise TypeError(f"Bad value {arg!r} of type {type(arg)}")
 
 
@@ -150,6 +160,7 @@ def dumps(
     implied_dict: bool = False,
     aqf: bool = False,
     safe: str = "",
+    distinguish_empty_list_dict: bool = False,
 ) -> str:
     ...
 
@@ -460,8 +471,20 @@ def _load_any(arg: str, pos: int, opts: LoadOpts) -> Tuple[Any, int]:
         if char == "(":
             first_val, pos = _load_any(arg, pos, opts)
             return _load_list(arg, pos, first_val, opts)
+        if opts.distinguish_empty_list_dict and char == ":":
+            pos += 1
+            if pos == len(arg):
+                raise ParseError("Unterminated empty composite, expected )")
+            char = arg[pos]
+            if char == ")":
+                return {}, pos + 1
+            else:
+                raise ParseError("Unterminated empty composite, expected )")
         if char == ")":
-            return {}, pos + 1
+            if opts.distinguish_empty_list_dict:
+                return [], pos + 1
+            else:
+                return {}, pos + 1
         return _load_comp(arg, pos, opts)
     else:
         return _load_atom(arg, pos, opts)
@@ -511,6 +534,7 @@ def loads(
     implied_dict: bool = False,
     implied_list: bool = False,
     aqf: bool = False,
+    distinguish_empty_list_dict: bool = False,
 ) -> Any:
     ...
 
