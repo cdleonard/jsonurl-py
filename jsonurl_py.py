@@ -54,7 +54,7 @@ class CommonOpts:
 @_dataclass_kwonly
 class DumpOpts(CommonOpts):
     """
-    Options for `dumps`
+    Options for `jsonurl_py.dumps`
     """
 
 
