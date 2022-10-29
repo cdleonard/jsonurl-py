@@ -13,9 +13,14 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))
 
 extensions = [
-    "sphinx.ext.autodoc",
     "sphinxarg.ext",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
 ]
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+}
 
 # Preserve order in source code
 autodoc_member_order = "bysource"
