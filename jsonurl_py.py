@@ -148,8 +148,7 @@ def _dump_any(arg: Any, opts: DumpOpts) -> str:
 
 
 @overload
-def dumps(arg: Any, opts: Optional[DumpOpts] = None) -> str:
-    ...
+def dumps(arg: Any, opts: Optional[DumpOpts] = None) -> str: ...
 
 
 @overload
@@ -161,8 +160,7 @@ def dumps(
     aqf: bool = False,
     safe: str = "",
     distinguish_empty_list_dict: bool = False,
-) -> str:
-    ...
+) -> str: ...
 
 
 def dumps(arg: Any, opts=None, **kw) -> str:
@@ -523,8 +521,7 @@ def _load_dict_data(arg: str, pos: int, opts: LoadOpts) -> dict:
 
 
 @overload
-def loads(arg: str, opts: Optional[LoadOpts] = None) -> Any:
-    ...
+def loads(arg: str, opts: Optional[LoadOpts] = None) -> Any: ...
 
 
 @overload
@@ -535,8 +532,7 @@ def loads(
     implied_list: bool = False,
     aqf: bool = False,
     distinguish_empty_list_dict: bool = False,
-) -> Any:
-    ...
+) -> Any: ...
 
 
 def loads(arg: str, opts=None, **kw) -> Any:
