@@ -17,7 +17,7 @@ jobs:
       - name: Print python version
         run: python -VV
       - name: Install dependencies
-        run: pip install -e .[test]
+        run: pip install -e '.[test]'
       - name: Test with pytest
         run: pytest --cov --cov-report=html
       - name: Generate coverage badge
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
       - name: Install dependencies
-        run: pip install -e .[test,hack]
+        run: pip install -e '.[test,hack]'
       - name: Run mypy
         run: mypy
   docs:
