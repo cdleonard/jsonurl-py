@@ -1,6 +1,7 @@
 """
 Run tests from https://github.com/cdleonard/jsonurl-test-data
 """
+
 import json
 from pathlib import Path
 
